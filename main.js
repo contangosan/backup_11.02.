@@ -350,11 +350,11 @@ function startApp() {
 
     // --------------------------------------------- PARAMETERS -----------------------------------------------
 
-    var x_size = 60;
-    var y_size = 60;
-    var z_size = 60;
+    var x_size = 100;
+    var y_size = 100;
+    var z_size = 100;
 
-    var toolhead_speed = 0.1;
+    var toolhead_speed = 0.5;
     var toolhead_size = parameters.toolheadSize;
 
     var voxel_list = [];

@@ -18,6 +18,39 @@ import { STLExporter } from 'three/examples/jsm/exporters/STLExporter.js';
 
 
 
+// -------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------  NOTIZEN  -------------------------------------------------- 
+// -------------------------------------------------------------------------------------------------------------
+
+
+
+
+/* --------------------------------------------- Color Palette -----------------------------------------------
+
+https://colorhunt.co/palette/ffffecf1e4c3c6a969597e52
+rgb(255, 255, 236)      beige hell
+rgb(241, 228, 195)      beige dunkel
+rgb(198, 169, 105)      braun
+rgb(89, 126, 82)        grün dunkel
+
+
+https://colorhunt.co/palette/f9efdbebd9b49dbc98638889
+rgb(249, 239, 219)      beige hell
+rgb(235, 217, 180)      beige dunkel
+rgb(157, 188, 152)      grün
+rgb(99, 136, 137)       teal
+rgb(99, 126, 118)       teal dunkel
+
+
+*/
+
+
+
+
+
+
+
+
 
 
 // -------------------------------------------------------------------------------------------------------------
@@ -214,15 +247,31 @@ const videoLink = document.createElement('button');
 
 
 
-// -------------------------------------------------------------------------------------------------------------
-// ------------------------------------------------ INITIALIZE -------------------------------------------------- 
-// -------------------------------------------------------------------------------------------------------------
+
+
+
 
 
 
 // --------------------------------------------- APP AS FUNCTION -----------------------------------------------
 
 function startApp() {
+
+   
+
+
+    // -------------------------------------------------------------------------------------------------------------
+    // ------------------------------------------------ INITIALIZE -------------------------------------------------- 
+    // -------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
 
     // --------------------------------------------- DOCUMENT -----------------------------------------------
 
@@ -320,7 +369,7 @@ function startApp() {
 
 
     // Parameters
-    const parameters = {
+    var parameters = {
         toolheadSize: 1
     }
 
@@ -350,9 +399,9 @@ function startApp() {
 
     // --------------------------------------------- PARAMETERS -----------------------------------------------
 
-    var x_size = 100;
-    var y_size = 100;
-    var z_size = 100;
+    var x_size = 200;
+    var y_size = 200;
+    var z_size = 200;
 
     var toolhead_speed = 0.5;
     var toolhead_size = parameters.toolheadSize;
@@ -368,13 +417,20 @@ function startApp() {
     // --------------------------------------------- VOXEL PARAMETERS -----------------------------------------------
 
 
+
+    // point geometry
+    var point_geometry = new THREE.BufferGeometry();
+    var point_material = new THREE.PointsMaterial( { size: 1, color: 0x000000 } );
+    
+
+
     // voxel geometry
     const voxel_geometry = new THREE.BoxGeometry( 1, 1, 1 );
     
     // transparent voxel material
 
 
-
+    var phong_material = new THREE.MeshPhongMaterial({color: 0xFF0000});
 
     var normal_voxel_material = new THREE.MeshNormalMaterial( );
 
@@ -389,6 +445,10 @@ function startApp() {
     var wireframe_material_voxel = new THREE.MeshBasicMaterial( { color: "rgb(25, 76, 111)", wireframe: true } );
 
 
+
+
+
+    
     // --------------------------------------------- TOOLHEAD ----------------------------------------------- 
 
     var toolhead_list = [];
@@ -635,7 +695,7 @@ function startApp() {
     var key38 = false;
     var key40 = false;
     var key32 = false;
-    var key16 = false;
+    var key17 = false;
 
 
     // onKeyDown function
@@ -685,8 +745,8 @@ function startApp() {
         }
 
         // SHIFT ERASE
-        if (keyCode == 16) {
-            key16 = true;
+        if (keyCode == 17) {
+            key17 = true;
         }
 
 
@@ -742,8 +802,8 @@ function startApp() {
         }
 
         // SPACE PAINT
-        if (keyCode == 16) {
-            key16 = false;
+        if (keyCode == 17) {
+            key17 = false;
         }
     
 
@@ -868,6 +928,10 @@ function startApp() {
 
     }
 
+    
+
+    
+
 
 
 
@@ -922,8 +986,11 @@ function startApp() {
 
 
     var voxel_position_list = [];
+    const points_array = [];
 
-    function paint2() {
+
+
+    function paint_points() {
 
 
 
@@ -971,28 +1038,558 @@ function startApp() {
 
 
 
-                        //console.log("voxel created");
 
+
+
+
+                        // this way also works!!
+                        
+                        removeObject( voxel_list[0]);
+                        voxel_list = [];
+
+                        const this_position_vec3 = new THREE.Vector3( var_x + 0.5, var_y + 0.5 , var_z + 0.5);
+                        points_array.push(this_position_vec3);
+
+                        point_geometry.setFromPoints(points_array);
+                        var point = new THREE.Points( point_geometry, point_material );
+
+
+                        voxel_list.push(point);
+                        scene.add( point );
+                        console.log("voxel created");
+                        
+                    
+
+
+
+                       
+                       
+
+
+                        // this way wortks!!!!!!
+                        /*
+                        var dotGeometry = new THREE.BufferGeometry();
+                        dotGeometry.setAttribute( 'position', new THREE.Float32BufferAttribute( [var_x + 0.5, var_y + 0.5 , var_z + 0.5], 3 ) );
+                        var point = new THREE.Points( dotGeometry, point_material );
+                        //scene.add( dot ); 
+                        
+                        voxel_list.push(point);
+                        scene.add( point );
+                        console.log("voxel created");
+                        */
+                        
+                       
+
+
+
+
+                        
+                        
+
+
+
+
+
+
+                        /*
+                        removeObject( voxel_list[0]);
+                        voxel_list = [];
+
+
+
+                        var count = voxel_position_list.length;
+
+                        //var dotGeometry = new THREE.BufferGeometry();
+                        //var dotMaterial = new THREE.PointsMaterial( { size: 1, color: 0x000000 } );
+
+
+				        var mesh = new THREE.InstancedMesh( point_geometry, point_material, count );
+
+                        const matrix = new THREE.Matrix4();
+
+
+                        for (let i = 0; i < voxel_position_list.length; i++) {
+                          
+                            matrix.setPosition( voxel_position_list[i][0], voxel_position_list[i][1], voxel_position_list[i][2] );
+
+						    mesh.setMatrixAt( i, matrix );
+						    //mesh.setColorAt( i, color );
+
+                        }
+                        
+
+                        voxel_list.push(mesh);
+
+                        scene.add( mesh );
+
+                        */
+
+                        console.log("voxel created");
+                        
+
+
+
+
+
+
+
+                      
+
+
+
+                    }
+                    
+
+                }
+
+
+            }
+
+        }
+
+    }
+
+
+    /*
+    var last_voxel_positions = [];
+    var mesh = new THREE.InstancedMesh( voxel_geometry, normal_voxel_material, 0 );
+    var matrix = new THREE.Matrix4();
+    */
+
+
+    function paint_instanced_mesh_new() {
+
+
+
+        // function should only be executed when the painting button is pressed
+        if( key32 == true ) {
+
+            last_voxel_positions = [];
+
+
+            // durch die toolhead liste durch iterieren um an jeder position einen voxel zu erstellen 
+            
+            for (let i = 0; i < toolhead_list.length; i++) {
+                
+                 
+
+
+                const var_x = Math.floor(toolhead_list[i].position.x)
+                const var_y = Math.floor(toolhead_list[i].position.y)
+                const var_z = Math.floor(toolhead_list[i].position.z)
+
+
+                // checken ob die coordinaten innerhalb des workspaces liegen. wenn nicht, wird nichts gemacht.
+                if (var_x >= 0 && var_y >= 0 && var_z >= 0 && var_x < x_size && var_y < y_size && var_z < z_size){
+
+
+
+                    if (   voxel_grid [var_x] [var_y] [var_z]  == 0  ) {
+
+                        //console.log( voxel_grid[Math.floor ( toolhead.position.x ) ][ Math.floor(toolhead.position.y)]  );
+                        //console.log("000")
+
+                        // den wert im voxel grid auf 1 setzent
+
+
+                        voxel_grid[var_x][var_y][var_z] = 1
+
+
+                        const these_coordinates = [];
+
+                        these_coordinates.push(var_x + 0.5);
+                        these_coordinates.push(var_y + 0.5);
+                        these_coordinates.push(var_z + 0.5);
+
+                        voxel_position_list.push(these_coordinates);
+
+
+                        last_voxel_positions.push(these_coordinates);
+
+
+
+                        removeObject( voxel_list[0]);
+                        voxel_list = [];
+
+
+
+                        //const geometry = new THREE.IcosahedronGeometry( 0.5, 3 );
+				        //const material = new THREE.MeshPhongMaterial( { color: 0xffffff } );
+                        //const material = new THREE.MeshNormalMaterial( );
+
+
+                        var added_count = last_voxel_positions.length;
+
+                        var old_count = mesh.count;
+                          
+                        var new_count = old_count + added_count
+
+                        console.log(new_count); 
+
+
+
+
+				        mesh.count = new_count;
+
+                        var j = 0;
+
+
+                        for (let i = old_count ; i < new_count; i++) {
+                          
+                            matrix.setPosition( last_voxel_positions[j][0], last_voxel_positions[j][1], last_voxel_positions[j][2] );
+
+						    mesh.setMatrixAt( j, matrix );
+						    //mesh.setColorAt( i, color );
+
+                            j++;
+
+                        }
+                        
+
+                        voxel_list.push(mesh);
+
+                        //scene.add( mesh );
+
+
+
+                        console.log("voxel created");
+
+
+
+                        /*
+                        const instancedMesh = new THREE.InstancedMesh(
+                            voxel_geometry,
+                            new THREE.MeshPhongMaterial()
+                        );
+
+
+                        const temp = new THREE.Object3D()
+
+
+                        for (let i = 0; i < voxel_position_list.length; i++) {
+                          
+                            temp.position.set(voxel_position_list[i][0], voxel_position_list[i][1], voxel_position_list[i][2]);
+                            temp.updateMatrix();
+                            instancedMesh.setMatrixAt(i, temp.matrix);
+
+                        }
+                        
+                        instancedMesh.instanceMatrix.needsUpdate = true;
+
+
+
+                        scene.add( instancedMesh );
+
+                        */
+
+
+                        /*
+                        function createInstances(i_x, i_y, i_z, temp = new THREE.Object3D()) {
+
+                            var this_x = i_x;
+                            var this_y = i_y;
+                            var this_z = i_z;
+
+                            const instancedMesh = new THREE.InstancedMesh(
+                                new THREE.BoxGeometry(),
+                                new THREE.MeshPhongMaterial()
+                            );
+                        
+                            
+                            temp.position.set(this_x, this_y, this_z);
+                            temp.updateMatrix();
+                            instancedMesh.setMatrixAt(1, temp.matrix);
+                            
+                        
+                            instancedMesh.instanceMatrix.needsUpdate = true;
+                        
+                            return instancedMesh;
+                        }
+                        */
+
+
+                        //const voxel_cube = createInstances(var_x + 0.5 , var_y + 0.5, var_z + 0.5);
 
                         
                         /*
                         // old way to create voxels
-                        const voxel_cube = new THREE.Mesh( voxel_geometry, transparent_material_voxel ); 
+                        const voxel_cube = new THREE.InstancedMesh( voxel_geometry, transparent_material_voxel, 1 ); 
                         //const voxel_cube2 = new THREE.Mesh( voxel_geometry, wireframe_material_voxel );
 
 
                         voxel_cube.position.set( var_x + 0.5 , var_y + 0.5, var_z + 0.5);
                         //voxel_cube2.position.set( var_x + 0.5, var_y + 0.5 , var_z + 0.5);
 
+                        //voxel_cube.instanceMatrix.setUsage( THREE.DynamicDrawUsage );
+
                         voxel_list.push(voxel_cube);
 
                         scene.add( voxel_cube );
                         //scene.add( voxel_cube2 );
+
+                        console.group(voxel_cube);
                         */
                         
 
 
 
+
+                    }
+                    
+
+                }
+
+
+            }
+
+        }
+
+    }
+
+
+    
+
+
+    function paint_instanced_mesh_clean() {
+
+
+
+        // function should only be executed when the painting button is pressed
+        if( key32 == true ) {
+
+            var create_new_voxels = false;
+
+
+            // durch die toolhead liste durch iterieren um an jeder position einen voxel zu erstellen 
+            
+            for (let i = 0; i < toolhead_list.length; i++) {
+                
+                
+
+
+                const var_x = Math.floor(toolhead_list[i].position.x)
+                const var_y = Math.floor(toolhead_list[i].position.y)
+                const var_z = Math.floor(toolhead_list[i].position.z)
+
+
+                // checken ob die coordinaten innerhalb des workspaces liegen. wenn nicht, wird nichts gemacht.
+                if (var_x >= 0 && var_y >= 0 && var_z >= 0 && var_x < x_size && var_y < y_size && var_z < z_size){
+
+
+
+                    if (   voxel_grid [var_x] [var_y] [var_z]  == 0  ) {
+
+                        //console.log( voxel_grid[Math.floor ( toolhead.position.x ) ][ Math.floor(toolhead.position.y)]  );
+                        //console.log("000")
+
+                        // den wert im voxel grid auf 1 setzent
+
+                        create_new_voxels = true;
+
+
+                        voxel_grid[var_x][var_y][var_z] = 1
+
+
+                        const these_coordinates = [];
+
+                        these_coordinates.push(var_x + 0.5);
+                        these_coordinates.push(var_y + 0.5);
+                        these_coordinates.push(var_z + 0.5);
+
+                        voxel_position_list.push(these_coordinates);
+
+
+
+                        console.log("voxel created");
+
+
+
+                        /*
+                        const instancedMesh = new THREE.InstancedMesh(
+                            voxel_geometry,
+                            new THREE.MeshPhongMaterial()
+                        );
+
+
+                        const temp = new THREE.Object3D()
+
+
+                        for (let i = 0; i < voxel_position_list.length; i++) {
+                          
+                            temp.position.set(voxel_position_list[i][0], voxel_position_list[i][1], voxel_position_list[i][2]);
+                            temp.updateMatrix();
+                            instancedMesh.setMatrixAt(i, temp.matrix);
+
+                        }
+                        
+                        instancedMesh.instanceMatrix.needsUpdate = true;
+
+
+
+                        scene.add( instancedMesh );
+
+                        */
+
+
+                        /*
+                        function createInstances(i_x, i_y, i_z, temp = new THREE.Object3D()) {
+
+                            var this_x = i_x;
+                            var this_y = i_y;
+                            var this_z = i_z;
+
+                            const instancedMesh = new THREE.InstancedMesh(
+                                new THREE.BoxGeometry(),
+                                new THREE.MeshPhongMaterial()
+                            );
+                        
+                            
+                            temp.position.set(this_x, this_y, this_z);
+                            temp.updateMatrix();
+                            instancedMesh.setMatrixAt(1, temp.matrix);
+                            
+                        
+                            instancedMesh.instanceMatrix.needsUpdate = true;
+                        
+                            return instancedMesh;
+                        }
+                        */
+
+
+                        //const voxel_cube = createInstances(var_x + 0.5 , var_y + 0.5, var_z + 0.5);
+
+                        
+                        /*
+                        // old way to create voxels
+                        const voxel_cube = new THREE.InstancedMesh( voxel_geometry, transparent_material_voxel, 1 ); 
+                        //const voxel_cube2 = new THREE.Mesh( voxel_geometry, wireframe_material_voxel );
+
+
+                        voxel_cube.position.set( var_x + 0.5 , var_y + 0.5, var_z + 0.5);
+                        //voxel_cube2.position.set( var_x + 0.5, var_y + 0.5 , var_z + 0.5);
+
+                        //voxel_cube.instanceMatrix.setUsage( THREE.DynamicDrawUsage );
+
+                        voxel_list.push(voxel_cube);
+
+                        scene.add( voxel_cube );
+                        //scene.add( voxel_cube2 );
+
+                        console.group(voxel_cube);
+                        */
+                        
+
+
+
+
+                    }
+                    
+
+                }
+
+
+            }
+
+
+
+
+            // gets inlyx executed if minimum 1 new voxel can be created
+            if (create_new_voxels == true){
+
+            
+                removeObject( voxel_list[0]);
+                voxel_list = [];
+
+
+
+                //const geometry = new THREE.IcosahedronGeometry( 0.5, 3 );
+                //const material = new THREE.MeshPhongMaterial( { color: 0xffffff } );
+                //const material = new THREE.MeshNormalMaterial( );
+
+
+                var count = voxel_position_list.length;
+
+                var instanced_mesh = new THREE.InstancedMesh( voxel_geometry, normal_voxel_material,  count );
+
+                const matrix = new THREE.Matrix4();
+
+
+                for (let i = 0; i < voxel_position_list.length; i++) {
+                
+                    matrix.setPosition( voxel_position_list[i][0], voxel_position_list[i][1], voxel_position_list[i][2] );
+
+                    instanced_mesh.setMatrixAt( i, matrix );
+                    //mesh.setColorAt( i, color );
+
+                }
+                
+
+                voxel_list.push(instanced_mesh);
+
+                scene.add( instanced_mesh );
+
+
+
+                
+
+
+            }
+
+
+        }
+
+    }
+
+
+
+
+
+
+    function paint_instanced_mesh() {
+
+
+
+        // function should only be executed when the painting button is pressed
+        if( key32 == true ) {
+
+
+
+
+            // durch die toolhead liste durch iterieren um an jeder position einen voxel zu erstellen 
+            
+            for (let i = 0; i < toolhead_list.length; i++) {
+                
+                
+
+
+                const var_x = Math.floor(toolhead_list[i].position.x)
+                const var_y = Math.floor(toolhead_list[i].position.y)
+                const var_z = Math.floor(toolhead_list[i].position.z)
+
+
+                // checken ob die coordinaten innerhalb des workspaces liegen. wenn nicht, wird nichts gemacht.
+                if (var_x >= 0 && var_y >= 0 && var_z >= 0 && var_x < x_size && var_y < y_size && var_z < z_size){
+
+
+
+                    if (   voxel_grid [var_x] [var_y] [var_z]  == 0  ) {
+
+                        //console.log( voxel_grid[Math.floor ( toolhead.position.x ) ][ Math.floor(toolhead.position.y)]  );
+                        //console.log("000")
+
+                        // den wert im voxel grid auf 1 setzent
+
+
+                        voxel_grid[var_x][var_y][var_z] = 1
+
+
+                        const these_coordinates = [];
+
+                        these_coordinates.push(var_x + 0.5);
+                        these_coordinates.push(var_y + 0.5);
+                        these_coordinates.push(var_z + 0.5);
+
+                        voxel_position_list.push(these_coordinates);
 
 
 
@@ -1033,11 +1630,6 @@ function startApp() {
 
 
 
-
-
-
-
-
                         /*
                         const instancedMesh = new THREE.InstancedMesh(
                             voxel_geometry,
@@ -1065,11 +1657,6 @@ function startApp() {
                         */
 
 
-
-
-
-
-
                         /*
                         function createInstances(i_x, i_y, i_z, temp = new THREE.Object3D()) {
 
@@ -1095,20 +1682,8 @@ function startApp() {
                         */
 
 
-
-
-
-
                         //const voxel_cube = createInstances(var_x + 0.5 , var_y + 0.5, var_z + 0.5);
 
-
-
-                
-
-
-                        
-                            
-                            
                         
                         /*
                         // old way to create voxels
@@ -1133,9 +1708,6 @@ function startApp() {
 
 
 
-            
-                    
-
                     }
                     
 
@@ -1152,7 +1724,7 @@ function startApp() {
 
 
 
-    function paint() {
+    function paint_voxel() {
 
 
 
@@ -1247,7 +1819,7 @@ function startApp() {
 
 
         // es wird nur etwas ausgeführt wenn der löschen key gedrückt wird
-        if (key16 == true) {
+        if (key17 == true) {
 
 
 
@@ -1631,7 +2203,7 @@ function startApp() {
     var safety_num = 0;
     var csg_union_list = [];
     var boolean_mesh_list = [];
-    var safety_num_limit = 1000;
+    var safety_num_limit = 1000000;
 
 
     // Define an array to store references to the meshes created in unionMesh
@@ -2082,69 +2654,201 @@ function startApp() {
 
 
 
+    var final_voxel_list = [];
+    var csg_voxel_list = [];
+    var csg_union_list = [];
+    var final_mesh_list = [];
 
 
 
 
+    function create_final_mesh(){
+
+
+        final_voxel_list = [];
+        csg_voxel_list = [];
+        csg_union_list = [];
+        final_mesh_list = [];
+        
+
+        
+        for (let i = 0; i < voxel_position_list.length; i++) {
+                            
+            //matrix.setPosition( voxel_position_list[i][0], voxel_position_list[i][1], voxel_position_list[i][2] );
+
+            
 
 
 
+            // old way to create voxels
+            const this_voxel = new THREE.Mesh( voxel_geometry, normal_voxel_material ); 
+            //const voxel_cube2 = new THREE.Mesh( voxel_geometry, wireframe_material_voxel );
 
 
+            this_voxel.position.set( voxel_position_list[i][0], voxel_position_list[i][1], voxel_position_list[i][2]);
+            //voxel_cube2.position.set( var_x + 0.5, var_y + 0.5 , var_z + 0.5);
 
+            final_voxel_list.push(this_voxel);
 
+            //scene.add( voxel_cube );
+            //scene.add( voxel_cube2 );
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // -------------------------------------------------------------------------------------------------------------
-    // ------------------------------------------------  ANIMATE  -------------------------------------------------- 
-    // -------------------------------------------------------------------------------------------------------------
-
-    function animate() {
-
-        requestAnimationFrame( animate );
-    
-        control.update();
-
-        if (toolhead_size != parameters.toolheadSize){
-
-            toolhead_size = parameters.toolheadSize;
-
-            remove_toolhead();
-            create_toolhead();
+            //console.log("voxel created");
 
         }
-    
-        renderer.render( scene, camera );
 
-        update_toolhead();
 
-        paint2();
-        erase();
-        //booleanUnion3();
+
+
+        // we have to unite all the voxels that were created in the last iteration (the ones in the voxel list)
+        // fist we transform all new voxels into csg objects
+        for ( let i = 0 ; i < final_voxel_list.length  ; i++ ){
+
+            final_voxel_list[i].updateMatrix();
+            var _csg = CSG.fromMesh(final_voxel_list[i], object_index);
+            object_index += 1;
+            csg_voxel_list.push(_csg);
+
+        }
+            
+
+
+
+
+
+
+        /*
+        // after we copied all the voxels into csg objects we can clean the voxel_list      
+        // remove all voxels from scene
+        for ( let i = 0 ; i < voxel_list.length  ; i++ ){
+            removeObject( voxel_list[i]);
+            console.log("voxel removed");
+        
+        }
+        // clean the voxel list
+        voxel_list = [];
+        */
+        
+
+
+
+        // if there are multiple voxels created they should be united
+        if (csg_voxel_list.length > 1){
+
+
+            // connect the first two voxels to the first union
+            var csg_union = csg_voxel_list[0].union(csg_voxel_list[1]);
+            // removing the first two objects from the csg list
+            csg_voxel_list = csg_voxel_list.slice(2);
+            csg_union_list.push(csg_union);
+
+
+
+            // now we can unite all csg objects
+            while(safety_num < safety_num_limit && csg_voxel_list.length > 0){
+
+                // adding 1 to the safety number
+                safety_num += 1;
+
+                // union the 
+                var csg_union = csg_union_list[0].union(csg_voxel_list[0]);
+                // removing the first object from the csg list
+                csg_voxel_list = csg_voxel_list.slice(1);
+
+                //clean the csg_union_list 
+                csg_union_list = [];
+                // append the new csg union into the csg_union_list
+                csg_union_list.push(csg_union);
+
+                console.log(safety_num);
+
+            }
+
+
+            // now all of the vopxels are united as a csg object in the csg_union_list
+            // so we can now transform this one csg_object into a mesh 
+            var unionMesh = CSG.toMesh(
+                csg_union_list[0],
+                new THREE.Matrix4(),
+                voxel_material,
+            );
+            // and put it into the boolean_mesh_list
+            final_mesh_list.push(unionMesh);
+            //scene.add(unionMesh);
+
+            
+
+            
+        }
+
+
+
+
+
+        // if we have only 1 voxel created this one should be the new boolean geometry
+        else if (csg_voxel_list.length == 1){
+            var unionMesh = CSG.toMesh(
+                csg_voxel_list[0],
+                new THREE.Matrix4(),
+                voxel_material,
+                
+            );
+
+            console.log("csg_voxel_list.length == 1");
+            final_mesh_list.push(unionMesh);
+            // append the new single csg voxel union mesh into the union_mesh_list
+            //csg_union_list.push(csg_voxel_list[0]);
+            //scene.add(unionMesh);
+
+        }
+
+
+
+
+        
+
+
+
+        return final_mesh_list[0];
+        //console.log(final_mesh_list[0]);
+
+
+        //return instanced_mesh;
+        
 
     }
 
+        
 
 
-    animate();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2230,22 +2934,8 @@ function startApp() {
             // Audible feedback on click
             exportSound.play();
 
-            // export Meshes
-            const meshesToExport = [];
-            const meshesCopy = []; // Array to hold copies of meshes
-
-            // Create copies of the meshes to be exported
-            for (let i = 0; i < voxel_list.length; i++) {
-
-                const meshCopy = voxel_list[0].clone();
-                meshesCopy.push(meshCopy);
-                meshesToExport.push(meshCopy);
-
-            }
-
-            //meshesToExport.push(boolean_mesh_list[0]);
-
-            exportSTL(meshesToExport);
+            // call the export stl function
+            exportSTL();
 
             // Remove focus from the button
             exportButton.blur();
@@ -2257,19 +2947,13 @@ function startApp() {
 
 
         // EXPORT STL FUNCTION
-        function exportSTL( meshes ) {
+        function exportSTL( ) {
             const exporter = new STLExporter();
 
-            // Create a new scene and add the meshes to export
-            const exportScene = new THREE.Scene();
-            meshes.forEach(mesh => {
-                if (mesh instanceof THREE.Mesh) {
-                    exportScene.add(mesh);
-                } else {
-                    console.error('Object is not a valid instance of THREE.Mesh:', mesh);
-                }
-            });
 
+            const exportScene = new THREE.Scene();
+            exportScene.add(create_final_mesh());
+            //exportScene.add(instanced_mesh);
 
             // Generate STL data
             const stlData = exporter.parse(exportScene, { binary: true, includeNormals: true });
@@ -2589,54 +3273,57 @@ function startApp() {
 
 
 
+
+
     // -------------------------------------------------------------------------------------------------------------
+    // ------------------------------------------------  ANIMATE  -------------------------------------------------- 
+    // -------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+    function animate() {
+
+        requestAnimationFrame( animate );
     
+        control.update();
+
+        if (toolhead_size != parameters.toolheadSize){
+
+            toolhead_size = parameters.toolheadSize;
+
+            remove_toolhead();
+            create_toolhead();
+
+        }
+    
+        renderer.render( scene, camera );
+
+        update_toolhead();
+
+
+        paint_instanced_mesh_clean();
+        //paint_instanced_mesh_new();
+        //paint_points();
+        erase();
+        //booleanUnion3();
+
+
+        //console.log(count);
+        console.log(voxel_position_list.length);
+
+    }
+
+
+
+    animate();
+
+
 
 
 
 } // End of App as Function
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// -------------------------------------------------------------------------------------------------------------
-// ------------------------------------------------  NOTIZEN  -------------------------------------------------- 
-// -------------------------------------------------------------------------------------------------------------
-
-
-
-
-/* --------------------------------------------- Color Palette -----------------------------------------------
-
-https://colorhunt.co/palette/ffffecf1e4c3c6a969597e52
-rgb(255, 255, 236)      beige hell
-rgb(241, 228, 195)      beige dunkel
-rgb(198, 169, 105)      braun
-rgb(89, 126, 82)        grün dunkel
-
-
-https://colorhunt.co/palette/f9efdbebd9b49dbc98638889
-rgb(249, 239, 219)      beige hell
-rgb(235, 217, 180)      beige dunkel
-rgb(157, 188, 152)      grün
-rgb(99, 136, 137)       teal
-rgb(99, 126, 118)       teal dunkel
-
-
-*/
 
 
 

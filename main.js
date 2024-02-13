@@ -287,41 +287,6 @@ function startApp() {
 
 
 
-    // --------------------------------------------- RENDERER + CAMERA -----------------------------------------------
-
-    // RENDERER
-    const renderer = new THREE.WebGLRenderer();
-    renderer.setSize( window.innerWidth, window.innerHeight );
-
-    //renderer.shadowMap.enabled = true;
-
-    document.body.appendChild( renderer.domElement );
-
-
-
-    // RESPONSIVE WINDOW
-    window.addEventListener('resize', handleResize);
-        
-    function handleResize() {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth , window.innerHeight);
-        renderer.render(scene, camera);
-    }
-
-
-
-    // CAMERA
-    const camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 700 );
-    camera.position.set( -10, -20, 25 );
-    
-    //camera.lookAt(new THREE.Vector3(0, 0, 0));
-    //camera.lookAt (toolhead_center.x,toolhead_center.y, toolhead_center.z);
-
-    camera.up.set(0, 0, 1);   // <=== spin around Z-axis
-
-
-    
 
 
 
@@ -342,6 +307,7 @@ function startApp() {
 
     // --------------------------------------------- LIGHT -----------------------------------------------
 
+    /*
     
     var ambientLight = new THREE.AmbientLight(0xffffff, 1);
     scene.add(ambientLight);
@@ -351,7 +317,7 @@ function startApp() {
     //directionalLight.target.position.set(-1,-1,0);
     scene.add( directionalLight );
     scene.add(directionalLight.target);
-    
+    */
 
 
 
@@ -408,9 +374,9 @@ function startApp() {
 
     // --------------------------------------------- PARAMETERS -----------------------------------------------
 
-    var x_size = 200;
-    var y_size = 200;
-    var z_size = 200;
+    var x_size = 100;
+    var y_size = 100;
+    var z_size = 100;
 
     var toolhead_speed = 0.5;
     //var toolhead_size = parameters.toolheadSize;
@@ -475,6 +441,10 @@ function startApp() {
 
 
 
+
+
+
+
     
     // --------------------------------------------- TOOLHEAD ----------------------------------------------- 
 
@@ -484,7 +454,9 @@ function startApp() {
     // toolhead material
     const toolhead_material = new THREE.MeshBasicMaterial({ color: 'rgb(89, 126, 82)' });
 
-    var toolhead_center = new THREE.Vector3(0.5,0.5,0.5);
+
+    // initial toolhead position
+    var toolhead_center = new THREE.Vector3(x_size / 2 ,y_size / 2 , 20 );
 
 
 
@@ -498,8 +470,174 @@ function startApp() {
 
 
 
+
+
+  
+
+
+
+
+    // --------------------------------------------- RENDERER + CAMERA -----------------------------------------------
+
+    // RENDERER
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize( window.innerWidth, window.innerHeight );
+
+    //renderer.shadowMap.enabled = true;
+
+    document.body.appendChild( renderer.domElement );
+
+
+
+    // RESPONSIVE WINDOW
+    window.addEventListener('resize', handleResize);
+        
+    function handleResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth , window.innerHeight);
+        renderer.render(scene, camera);
+    }
+
+
+    /*
+    // CAMERA
+    const camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 700 );
+    //camera.position.set( -10, -20, 25 );
+
+    camera.position.set( toolhead_center.x -20,toolhead_center.y-20, toolhead_center.z+20);
+    
+    //camera.lookAt(toolhead_center);
+    
+    //camera.lookAt(new THREE.Vector3(0, 0, 0));
+    //camera.lookAt (toolhead_center.x,toolhead_center.y, toolhead_center.z);
+    camera.lookAt (x_size / 2 ,y_size / 2 , 20 );
+
+    camera.up.set(0, 0, 1);   // <=== spin around Z-axis
+
+    */
+
+    // CAMERA
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 700);
+    // Setzen der Up-Richtung der Kamera 
+    camera.up.set(0, 0, 1); // Hier wird die Kamera um die Z-Achse gedreht
+    // Setzen der Position der Kamera
+    //camera.position.set(toolhead_center.x - 50, toolhead_center.y - 50, toolhead_center.z + 50);
+    // Setzen der Blickrichtung der Kamera auf toolhead_center
+    //camera.lookAt(toolhead_center);
+
+    //console.log(toolhead_center);
+   
+    
+    //camera.position.set(toolhead_center.x - 20 , toolhead_center.y - 50, toolhead_center.z + 50);
+    //camera.lookAt(toolhead_center);
+
+    //var camera_offset_vector = new THREE.Vector3(toolhead_center.x - 20 , toolhead_center.y - 50, toolhead_center.z + 50);
+    var camera_offset_vector = new THREE.Vector3(0,0,0);
+    
+
+
+
+
+
+    
+
+
+
+
+
+    var lock_camera = true;
+
+    function update_camera_position(){
+
+        
+
+        
+
+        //camera.position.set(toolhead_center.x - 20 , toolhead_center.y - 50, toolhead_center.z + 50);
+        
+        //camera_offset_vector = new THREE.Vector3(toolhead_center.x - 20 , toolhead_center.y - 50, toolhead_center.z + 50);
+        camera.position.set(toolhead_center.x  - camera_offset_vector.x , toolhead_center.y - camera_offset_vector.y, toolhead_center.z - camera_offset_vector.z);
+
+        // condition für die erste iteration die die kamera position auf die richtige stelle setzt
+        if(lock_camera == true){
+
+            lock_camera = false;
+
+            // abstand der kamera vom toolhead
+            camera.position.set(toolhead_center.x - 20 , toolhead_center.y - 50, toolhead_center.z + 50);
+            console.log("asdwasdwasdw");
+
+
+            camera_offset_vector = toolhead_center.clone().sub(camera.position);
+            //camera_offset_vector = new THREE.Vector3(toolhead_center.x - 20 , toolhead_center.y - 50, toolhead_center.z + 50);
+        }
+
+
+        // Setzen der Blickrichtung der Kamera auf toolhead_center
+        camera.lookAt(toolhead_center);
+        // Setzen der Up-Richtung der Kamera (optional)
+
+
+        //orbit_control.target.set(toolhead_center);
+        orbit_control.target.set(toolhead_center.x, toolhead_center.y, toolhead_center.z);
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // -------------------------------------------- MOUSE CONTROL --------------------------------------------
+
+    var orbit_control = new OrbitControls( camera, renderer.domElement );
+    //var orbit = new THREE.OrbitControls()
+    //var orbit_control = new OrbitControls(  );
+
+    //orbit_control.target.set(toolhead_center.x, toolhead_center.y, toolhead_center.z);
+
+
+
+
+
+    //init
+    update_camera_position();
+
+    
+
+
+    // Hinzufügen eines Event Listeners für das 'change'-Ereignis
+    orbit_control.addEventListener('change', function() {
+        // Hier wird der Code ausgeführt, den Sie ausführen möchten, wenn die Orbit Controls geändert werden
+        console.log('Orbit Controls wurden geändert!');
+         
+
+        camera_offset_vector = toolhead_center.clone().sub(camera.position);
+        // Fügen Sie hier Ihren eigenen Code hinzu
+    });     
+
+
+
+
+
     // --------------------------------------------- AXES HELPER ----------------------------------------------- 
 
+    /*
     const axesHelper = new THREE.AxesHelper( 5 );
 
 
@@ -514,6 +652,7 @@ function startApp() {
 
 
     // --------------------------------------------- HELPER LINES ----------------------------------------------- 
+    */
 
     const material = new THREE.LineBasicMaterial( { color: 'rgb(241, 228, 195)' } );
 
@@ -548,6 +687,11 @@ function startApp() {
 
 
 
+
+
+
+
+    
 
     // --------------------------------------------- VOXELS GRID ----------------------------------------------- 
     var voxel_grid = [];
@@ -646,73 +790,6 @@ function startApp() {
 
 
 
-    // -------------------------------------------- MOUSE CONTROL --------------------------------------------
-    
-    var control = new OrbitControls( camera, renderer.domElement );
-
-
-    /*
-
-    // movement of Toolhead
-    document.addEventListener("keydown", onDocumentKeyDown, false);
-    function onDocumentKeyDown(event) {
-    
-        var keyCode = event.which;
-
-        
-
-        // single keys
-
-            // W up
-        if (keyCode == 87) {
-            toolhead.position.y += 0.21;
-        }  
-
-            // S down
-        if (keyCode == 83) {
-            toolhead.position.y -= 0.21;
-        }  
-
-            // A left
-        if (keyCode == 65) {
-            toolhead.position.x -= 0.21;
-        }  
-        
-            // D right
-        if (keyCode == 68) {
-            toolhead.position.x += 0.21;
-        }  
-        
-            // E high
-        if (keyCode == 69) {
-            toolhead.position.z += 0.21;
-        }  
-        
-            // Q low
-        if (keyCode == 81) {
-            toolhead.position.z -= 0.21;
-        }  
-        
-            // SPACE reset
-        if (keyCode == 32) {
-            toolhead.position.x = 0.5;
-            toolhead.position.y = 0.5;
-            toolhead.position.z = 0.5;
-        }
-
-
-        // double Keys
-
-    
-        
-
-
-        //renderer.render( scene, camera );
-    };
-
-    */
-
-
 
 
 
@@ -727,7 +804,7 @@ function startApp() {
     var key38 = false;
     var key40 = false;
     var key32 = false;
-    var key17 = false;
+    var key16 = false;
 
 
     // onKeyDown function
@@ -777,8 +854,8 @@ function startApp() {
         }
 
         // SHIFT ERASE
-        if (keyCode == 17) {
-            key17 = true;
+        if (keyCode == 16) {
+            key16 = true;
         }
 
 
@@ -834,8 +911,8 @@ function startApp() {
         }
 
         // SPACE PAINT
-        if (keyCode == 17) {
-            key17 = false;
+        if (keyCode == 16) {
+            key16 = false;
         }
     
 
@@ -896,71 +973,64 @@ function startApp() {
         var sum_of_points_z = 0;
 
         //console.log(sum_of_points_x);
+        
+        if (movement_x != 0 || movement_y != 0 || movement_z != 0){
 
 
-        for (let i = 0; i < toolhead_list.length; i++) {
 
-            // TOOLHEAD KOORDINATEN WERDEN GEÄNDERT
-            toolhead_list[i].position.x += movement_x;
-            toolhead_list[i].position.y += movement_y;
-            toolhead_list[i].position.z += movement_z;
+            //update_camera_position();
 
 
-            // adding up the sum of coordinates
-            sum_of_points_x += toolhead_list[i].position.x;
-            sum_of_points_y += toolhead_list[i].position.y;
-            sum_of_points_z += toolhead_list[i].position.z;
+
+            for (let i = 0; i < toolhead_list.length; i++) {
+
+                // TOOLHEAD KOORDINATEN WERDEN GEÄNDERT
+                toolhead_list[i].position.x += movement_x;
+                toolhead_list[i].position.y += movement_y;
+                toolhead_list[i].position.z += movement_z;
+    
+    
+                // adding up the sum of coordinates
+                sum_of_points_x += toolhead_list[i].position.x;
+                sum_of_points_y += toolhead_list[i].position.y;
+                sum_of_points_z += toolhead_list[i].position.z;
+    
+            }
+    
+    
+    
+    
+            toolhead_display_geometry[0].position.x += movement_x;
+            toolhead_display_geometry[0].position.y += movement_y;
+            toolhead_display_geometry[0].position.z += movement_z;
+
+
+
+
+            
+    
+
+    
+
+        
+
+
+            // calculating the average coordinates
+            var average_of_points_x = sum_of_points_x / (toolhead_list.length );
+            var average_of_points_y = sum_of_points_y / (toolhead_list.length );
+            var average_of_points_z = sum_of_points_z / (toolhead_list.length );
+
+            // refreshing the toolhead center
+            toolhead_center.x = average_of_points_x
+            toolhead_center.y = average_of_points_y
+            toolhead_center.z = average_of_points_z
+
+
+
+            update_camera_position();
 
         }
 
-
-        toolhead_display_geometry[0].position.x += movement_x;
-        toolhead_display_geometry[0].position.y += movement_y;
-        toolhead_display_geometry[0].position.z += movement_z;
-
-
-
-        // calculating the average coordinates
-        var average_of_points_x = sum_of_points_x / (toolhead_list.length );
-        var average_of_points_y = sum_of_points_y / (toolhead_list.length );
-        var average_of_points_z = sum_of_points_z / (toolhead_list.length );
-
-        // refreshing the toolhead center
-        toolhead_center.x = average_of_points_x
-        toolhead_center.y = average_of_points_y
-        toolhead_center.z = average_of_points_z
-
-
-        //console.log(toolhead_center);
-
-
-
-
-
-
-        //console.log(toolhead_size);
-        //console.log(sum_of_points_x);
-
-
-        //console.log( sum_of_points_x / (toolhead_size * toolhead_size * toolhead_size) );
-        //console.log( sum_of_points_y / (toolhead_size * toolhead_size * toolhead_size) );
-        //console.log( sum_of_points_z / (toolhead_size * toolhead_size * toolhead_size) );
-        
-
-    /*
-        toolhead_center.x = sum_of_points_x / (toolhead_size * toolhead_size * toolhead_size) ;
-        toolhead_center.y = sum_of_points_y / (toolhead_size * toolhead_size * toolhead_size) ;
-        toolhead_center.z = sum_of_points_z / (toolhead_size * toolhead_size * toolhead_size) ;
-    */
-        //console.log(toolhead_center);
-
-
-
-        /*
-        toolhead.position.x += movement_x;
-        toolhead.position.y += movement_y;
-        toolhead.position.z += movement_z;
-        */
 
 
     }
@@ -2071,7 +2141,7 @@ function startApp() {
 
 
         // es wird nur etwas ausgeführt wenn der löschen key gedrückt wird
-        if (key17 == true) {
+        if (key16 == true) {
 
 
             var erase_voxels = false;
@@ -5298,14 +5368,15 @@ function startApp() {
     // -------------------------------------------------------------------------------------------------------------
 
 
-
+    //renderer.render( scene, camera );
 
 
     function animate() {
 
-        requestAnimationFrame( animate );
+        
+        renderer.render( scene, camera );
     
-        control.update()
+        
     
         // condition for recreating toolhead if parameters change
         if (toolhead_size != parameters.toolheadSize || toolhead_type != button_toohead_type){
@@ -5315,13 +5386,23 @@ function startApp() {
 
             remove_toolhead();
             create_toolhead();
+            
+            //update_toolhead();
             //create_box_toolhead();
 
         }
     
-        renderer.render( scene, camera );
-
+        //orbit_control.update(w);
+        
         update_toolhead();
+        //update_camera_position();
+
+        // enable orbit control update after update camera position for trippy effect!
+        //orbit_control.update();
+        
+        
+
+        
 
 
         paint_instanced_mesh_clean();
@@ -5335,6 +5416,8 @@ function startApp() {
         console.log(voxel_position_list.length);
 
         //console.log(toolhead_center);
+
+        requestAnimationFrame( animate );
 
     }
 

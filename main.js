@@ -118,6 +118,9 @@ const exportSound = new Audio ('sounds/export_jona.mp3');
 const clearSound = new Audio('sounds/clearButton.wav');
 
 
+// --- Toolhead Type Button ---
+const toolheadTypeSound = new Audio('sounds/plop_switch.mp3');
+
 
 
 
@@ -410,8 +413,18 @@ function startApp() {
     var z_size = 200;
 
     var toolhead_speed = 0.5;
-    var toolhead_size = parameters.toolheadSize;
-    var toolhead_type = parameters.toolheadType;
+    //var toolhead_size = parameters.toolheadSize;
+    //var toolhead_type = parameters.toolheadType;
+
+
+    // iniialwert des toolheads
+    var button_toolhead_size = 1;
+    var button_toohead_type = 2;
+
+    // variablen die im code benutzt werden
+    var toolhead_size = button_toolhead_size;
+    var toolhead_type = button_toohead_type;
+    
 
     var voxel_list = [];
 
@@ -5143,7 +5156,7 @@ function startApp() {
         
         // Create an image element for the icon
         var typeIcon = document.createElement("img");
-        typeIcon.setAttribute("src", "icons/cube.png");
+        typeIcon.setAttribute("src", "icons/sphere.png");
         typeIcon.setAttribute("alt", "Toggle bgm");
         typeIcon.style.width = '35px';
         typeIcon.style.height = '35px';
@@ -5219,26 +5232,29 @@ function startApp() {
 
         // Set initial state
         var isSphere = false;
-        var toolhead_type = [];
 
         // Function to toggle mute/play
         typeButton.addEventListener("click", function() {
 
             if (isSphere) {
 
-                toolhead_type = 0;
+                button_toohead_type = 2;
                 //muteButton.textContent = "Mute";
-                typeIcon.setAttribute("src", "icons/cube.png");
+                typeIcon.setAttribute("src", "icons/sphere.png");
 
-                console.log('toolhead Type: cube');
+                toolheadTypeSound.play();
+
+                console.log('toolhead Type: sphere');
 
             } else {
 
-                bgm.pause();
+                button_toohead_type = 1;
                 //muteButton.textContent = "Unmute";
-                typeIcon.setAttribute("src", "icons/sphere.png");
+                typeIcon.setAttribute("src", "icons/cube.png");
 
-                console.log('toolhead Type: sphere')
+                toolheadTypeSound.play();
+
+                console.log('toolhead Type: cube')
 
             }
 
@@ -5292,10 +5308,10 @@ function startApp() {
         control.update()
     
         // condition for recreating toolhead if parameters change
-        if (toolhead_size != parameters.toolheadSize || toolhead_type != parameters.toolheadType){
+        if (toolhead_size != parameters.toolheadSize || toolhead_type != button_toohead_type){
 
             toolhead_size = parameters.toolheadSize;
-            toolhead_type = parameters.toolheadType;
+            toolhead_type = button_toohead_type;
 
             remove_toolhead();
             create_toolhead();

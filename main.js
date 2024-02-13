@@ -374,8 +374,8 @@ function startApp() {
 
     // Parameters
     var parameters = {
-        toolheadSize: 3,
-        toolheadType: 1
+        toolheadSize: 1,
+        toolheadType: 2
     }
 
 
@@ -425,6 +425,13 @@ function startApp() {
 
 
 
+
+
+
+    // display toolhead material
+    var display_toolhead_material = new THREE.MeshBasicMaterial( { color: "rgb(111, 151, 216)", wireframe: false, transparent: true, opacity: 0.5} );
+
+
     // point geometry
     var point_geometry = new THREE.BufferGeometry();
     var point_material = new THREE.PointsMaterial( { size: 1, color: 0x000000 } );
@@ -459,6 +466,7 @@ function startApp() {
     // --------------------------------------------- TOOLHEAD ----------------------------------------------- 
 
     var toolhead_list = [];
+    var toolhead_display_geometry = [];
 
     // toolhead material
     const toolhead_material = new THREE.MeshBasicMaterial({ color: 'rgb(89, 126, 82)' });
@@ -889,6 +897,11 @@ function startApp() {
             sum_of_points_z += toolhead_list[i].position.z;
 
         }
+
+
+        toolhead_display_geometry[0].position.x += movement_x;
+        toolhead_display_geometry[0].position.y += movement_y;
+        toolhead_display_geometry[0].position.z += movement_z;
 
 
 
@@ -2544,6 +2557,7 @@ function startApp() {
 
 
         toolhead_list = [];
+        toolhead_display_geometry = [];
 
 
         /*
@@ -2579,7 +2593,17 @@ function startApp() {
         if (toolhead_size == 1) {
 
 
+            // toolhead display geometry
+            var sphere_geometry = new THREE.SphereGeometry(4.2);
+            var display_toolhead = new THREE.Mesh(sphere_geometry, display_toolhead_material);
+            display_toolhead.position.set(toolhead_center.x , toolhead_center.y , toolhead_center.z );
+
+            toolhead_display_geometry.push(display_toolhead);
+            scene.add(display_toolhead);
             
+
+
+
             
             //toolhead_center = new THREE.Vector3(toolhead_size / 2,toolhead_size / 2,toolhead_size / 2 )
 
@@ -2785,6 +2809,16 @@ function startApp() {
 
         else if (toolhead_size == 2) {
 
+
+
+
+            // create toolhead display geometry
+            var sphere_geometry = new THREE.SphereGeometry(5.5);
+            var display_toolhead = new THREE.Mesh(sphere_geometry, display_toolhead_material);
+            display_toolhead.position.set(toolhead_center.x , toolhead_center.y , toolhead_center.z );
+
+            toolhead_display_geometry.push(display_toolhead);
+            scene.add(display_toolhead);
 
             
             
@@ -3022,6 +3056,16 @@ function startApp() {
 
 
             
+            // create toolhead display geometry
+            var sphere_geometry = new THREE.SphereGeometry(7);
+            var display_toolhead = new THREE.Mesh(sphere_geometry, display_toolhead_material);
+            display_toolhead.position.set(toolhead_center.x + 0.5 , toolhead_center.y + 0.5, toolhead_center.z + 0.5);
+
+            toolhead_display_geometry.push(display_toolhead);
+            scene.add(display_toolhead);
+
+
+
             
             //toolhead_center = new THREE.Vector3(toolhead_size / 2,toolhead_size / 2,toolhead_size / 2 )
 
@@ -3551,19 +3595,6 @@ function startApp() {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
         console.log(toolhead_list.length)
 
 
@@ -3656,7 +3687,7 @@ function startApp() {
             toolhead.position.set( coordinates_list[i][0]  , coordinates_list[i][1]   , coordinates_list[i][2] );
 
             this_toolhead_list.push(toolhead);
-            scene.add(toolhead);
+            //scene.add(toolhead);
 
 
         }
@@ -3685,6 +3716,7 @@ function startApp() {
     function create_box_toolhead(){
 
         toolhead_list = [];
+        toolhead_display_geometry = [];
 
 
 
@@ -3752,6 +3784,19 @@ function startApp() {
 
         if(toolhead_size == 1) {
 
+            var toolhead_coordinates = [];
+
+
+
+            // toolhead display geometry
+            var box_geometry = new THREE.BoxGeometry(4, 4, 4);
+            var display_toolhead = new THREE.Mesh(box_geometry, display_toolhead_material);
+            display_toolhead.position.set(toolhead_center.x , toolhead_center.y , toolhead_center.z );
+
+            toolhead_display_geometry.push(display_toolhead);
+            scene.add(display_toolhead);
+
+
 
             var cube_size = 3;
 
@@ -3766,11 +3811,14 @@ function startApp() {
 
                     for (let z = -cube_size / 2; z< cube_size / 2 ; z++){
 
-                        var toolhead = new THREE.Mesh(toolhead_geometry, toolhead_material);
-                        toolhead.position.set( toolhead_center.x + x + 0.5   , toolhead_center.y + y + 0.5 , toolhead_center.z + z+ 0.5);
-                        scene.add(toolhead);
+                        //var toolhead = new THREE.Mesh(toolhead_geometry, toolhead_material);
+                        //toolhead.position.set( toolhead_center.x + x + 0.5   , toolhead_center.y + y + 0.5 , toolhead_center.z + z+ 0.5);
 
-                        toolhead_list.push(toolhead);
+
+                        toolhead_coordinates.push([toolhead_center.x + x + 0.5, toolhead_center.y + y + 0.5, toolhead_center.z + z+ 0.5])
+                        //scene.add(toolhead);
+
+                        //toolhead_list.push(toolhead);
 
                         
 
@@ -3781,6 +3829,11 @@ function startApp() {
 
 
             }
+
+
+
+            toolhead_list = create_toolhead_from_coordinates(toolhead_coordinates);
+
             
             
         }
@@ -3790,6 +3843,18 @@ function startApp() {
 
 
         if(toolhead_size == 2) {
+
+
+            var toolhead_coordinates = [];
+
+
+            // toolhead display geometry
+            var box_geometry = new THREE.BoxGeometry(7, 7, 7);
+            var display_toolhead = new THREE.Mesh(box_geometry, display_toolhead_material);
+            display_toolhead.position.set(toolhead_center.x , toolhead_center.y , toolhead_center.z );
+
+            toolhead_display_geometry.push(display_toolhead);
+            scene.add(display_toolhead);
 
 
             var cube_size = 6;
@@ -3805,11 +3870,7 @@ function startApp() {
 
                     for (let z = -cube_size / 2; z< cube_size / 2 ; z++){
 
-                        var toolhead = new THREE.Mesh(toolhead_geometry, toolhead_material);
-                        toolhead.position.set( toolhead_center.x + x + 0.5   , toolhead_center.y + y + 0.5 , toolhead_center.z + z+ 0.5);
-                        scene.add(toolhead);
-
-                        toolhead_list.push(toolhead);
+                        toolhead_coordinates.push([toolhead_center.x + x + 0.5, toolhead_center.y + y + 0.5, toolhead_center.z + z+ 0.5])
 
                         
 
@@ -3821,6 +3882,8 @@ function startApp() {
 
             }
             
+
+            toolhead_list = create_toolhead_from_coordinates(toolhead_coordinates);
             
         }
 
@@ -3828,6 +3891,21 @@ function startApp() {
 
 
         if(toolhead_size == 3) {
+
+
+            var toolhead_coordinates = []
+
+
+
+            // toolhead display geometry
+            var box_geometry = new THREE.BoxGeometry(10, 10, 10);
+            var display_toolhead = new THREE.Mesh(box_geometry, display_toolhead_material);
+            display_toolhead.position.set(toolhead_center.x , toolhead_center.y , toolhead_center.z );
+
+            toolhead_display_geometry.push(display_toolhead);
+            scene.add(display_toolhead);
+
+
 
 
             var cube_size = 9;
@@ -3843,11 +3921,7 @@ function startApp() {
 
                     for (let z = -cube_size / 2; z< cube_size / 2 ; z++){
 
-                        var toolhead = new THREE.Mesh(toolhead_geometry, toolhead_material);
-                        toolhead.position.set( toolhead_center.x + x + 0.5   , toolhead_center.y + y + 0.5 , toolhead_center.z + z+ 0.5);
-                        scene.add(toolhead);
-
-                        toolhead_list.push(toolhead);
+                        toolhead_coordinates.push([toolhead_center.x + x + 0.5, toolhead_center.y + y + 0.5, toolhead_center.z + z+ 0.5])
 
                         
 
@@ -3858,6 +3932,9 @@ function startApp() {
 
 
             }
+
+
+            toolhead_list = create_toolhead_from_coordinates(toolhead_coordinates);
             
             
         }
@@ -3911,12 +3988,17 @@ function startApp() {
 
     function remove_toolhead(){
 
+        // remove all toolhead_voxels from scene
         for (let i = 0; i < toolhead_list.length; i++) {
 
             removeObject( toolhead_list[i]);
             //toolhead_list = [];
 
         }
+
+
+        // remove the toolhead display mesh from scene
+        removeObject(toolhead_display_geometry[0]);
 
     }
 
@@ -4861,7 +4943,7 @@ function startApp() {
         //console.log(count);
         console.log(voxel_position_list.length);
 
-        console.log(toolhead_center);
+        //console.log(toolhead_center);
 
     }
 

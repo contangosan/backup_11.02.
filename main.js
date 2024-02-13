@@ -97,13 +97,6 @@ document.body.appendChild(bgm);
 
 
 
-
-
-
-
-
-
-
 // --- Start Button ---
 //startButton = [];
 //const startSound = new Audio ('sounds/startButton.wav');
@@ -367,6 +360,17 @@ function startApp() {
     
     var gui = new GUI();
 
+    /*.lil-gui {
+        --background-color: #ffffec;
+        --text-color: #000000;
+        --title-background-color: #c6a96a;
+        --title-text-color: #ffffff;
+        --widget-color: #c6a96a;
+        --hover-color: #587c51;
+        --focus-color: #439344;
+        --number-color: #ffffff;
+        --string-color: #587c51;
+    }*/   
 
     // Parameters
     var parameters = {
@@ -4166,7 +4170,9 @@ function startApp() {
 
     // integrate Buttons
     exportFunction();
+    clearFunction();
     muteFunction();
+    toolheadTypeFunction();
 
 
 
@@ -4222,6 +4228,12 @@ function startApp() {
 
 
 
+        /*// Global variables to keep track of meshes for export
+        var meshesToExport = [];
+        const finishButton = document.createElement('button'); // Finish button for exporting
+        const returnButton = document.createElement('button'); // Return button for returning to drawing mode
+        */
+
         
 
         // add click event listener to the export button and define which meshes to export
@@ -4235,6 +4247,9 @@ function startApp() {
 
             // Remove focus from the button
             exportButton.blur();
+
+            // Prepare meshes for export and display in viewer
+            //prepareMeshesForExport();
 
         });
         
@@ -4269,6 +4284,108 @@ function startApp() {
 
         }
 
+
+        /*
+
+        // Prepare meshes for export and display in viewer
+        function prepareMeshesForExport() {
+            meshesToExport = [];
+            // Add meshes to the list for export
+            meshesToExport.push(create_final_mesh()); // Assuming create_final_mesh() function returns the mesh to be exported
+            // Add more meshes if needed
+
+            // Clear existing scene and renderer
+            clearScene();
+
+            // Display meshes in viewer
+            meshesToExport.forEach(mesh => {
+                viewerScene.add(mesh);
+            });
+
+            // Show UI for exporting or returning to drawing mode
+            showExportUI();
+        }
+
+
+
+        // Function to clear existing scene and renderer
+        function clearScene() {
+            // Remove all objects from the viewer scene
+             scene.children.forEach(child => {
+                scene.remove(child);
+            });
+        }
+
+
+
+        // Function to show UI for exporting or returning to drawing mode
+        function showExportUI() {
+            // Display UI elements for exporting or returning to drawing mode
+            // For example, you can show two buttons: "Finish" and "Return"
+            document.body.appendChild(finishButton);
+            finishButton.style.textContent = 'finish';
+            finishButton.style.fontSize = '12px';
+            finishButton.style.position = 'absolute';
+            finishButton.style.bottom = '2%';
+            finishButton.style.right = '20px';
+            finishButton.style.zIndex = '9999'; // place in front of scene
+            finishButton.style.cursor = 'pointer'; // Change cursor on hover
+
+            document.body.appendChild(returnButton);
+            returnButton.style.textContent = 'return';
+            returnButton.style.fontSize = '12px';
+            returnButton.style.position = 'absolute';
+            returnButton.style.bottom = '2%';
+            returnButton.style.right = '20px';
+            returnButton.style.zIndex = '9999'; // place in front of scene
+            returnButton.style.cursor = 'pointer'; // Change cursor on hover
+
+            // Add click event listener to the "Finish" button
+            finishButton.addEventListener('click', exportSelectedMeshes);
+
+            // Add click event listener to the "Return" button
+            returnButton.addEventListener('click', returnToDrawingMode);
+        }
+
+
+
+        // Function to export selected meshes
+        function exportSelectedMeshes() {
+            // Generate STL data for selected meshes
+            const exporter = new STLExporter();
+            const stlData = exporter.parse(new THREE.Group().add(...meshesToExport), { binary: true, includeNormals: true });
+
+            // Convert data to a blob and trigger download
+            const blob = new Blob([stlData], { type: 'application/octet-stream' });
+            const link = document.createElement('a');
+        
+            link.href = URL.createObjectURL(blob);
+            link.download = 'model.stl';
+            link.click();
+
+            // Clean up
+            URL.revokeObjectURL(link.href);
+        }
+
+
+
+        // Function to return to drawing mode
+        function returnToDrawingMode() {
+            // Clear viewer scene
+            clearScene();
+
+            // Hide UI elements for exporting or returning to drawing mode
+            finishButton.style.display = 'none';
+            returnButton.style.display = 'none';
+
+            // Add back event listener for export button
+            exportButton.addEventListener('click', prepareMeshesForExport);
+        }
+
+        */
+
+        
+
     }
     
     
@@ -4279,154 +4396,160 @@ function startApp() {
 
     // ----------------------------------------------  CLEAR SCENE  ------------------------------------------------ 
    
-    /*
-    // Create modal elements
-    const modal = document.createElement('div');
-    modal.classList.add('modal');
-    modal.style.display = 'none'; // Hide modal by default
+    function clearFunction() {
 
-    const modalContent = document.createElement('div');
-    modalContent.classList.add('modal-content');
+        /*
+        // Create modal elements
+        const modal = document.createElement('div');
+        modal.classList.add('modal');
+        modal.style.display = 'none'; // Hide modal by default
 
-    const message = document.createElement('p');
-    message.textContent = 'Are you sure you want to clear the scene?';
+        const modalContent = document.createElement('div');
+        modalContent.classList.add('modal-content');
 
-    const confirmButton = document.createElement('button');
-    confirmButton.textContent = 'I am sure';
+        const message = document.createElement('p');
+        message.textContent = 'Are you sure you want to clear the scene?';
 
-    // Add modal content to modal
-    modalContent.appendChild(message);
-    modalContent.appendChild(confirmButton);
-    modal.appendChild(modalContent);
+        const confirmButton = document.createElement('button');
+        confirmButton.textContent = 'I am sure';
 
-    // Append modal to the document body
-    document.body.appendChild(modal);
+        // Add modal content to modal
+        modalContent.appendChild(message);
+        modalContent.appendChild(confirmButton);
+        modal.appendChild(modalContent);
 
-    // Style the modal dynamically
-    modal.style.position = 'fixed';
-    modal.style.zIndex = '9999';
-    modal.style.left = '0';
-    modal.style.top = '0';
-    modal.style.width = '100%';
-    modal.style.height = '100%';
-    modal.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+        // Append modal to the document body
+        document.body.appendChild(modal);
 
-    modalContent.style.position = 'absolute';
-    modalContent.style.top = '50%';
-    modalContent.style.left = '50%';
-    modalContent.style.transform = 'translate(-50%, -50%)';
-    modalContent.style.backgroundColor = '#fff';
-    modalContent.style.padding = '20px';
+        // Style the modal dynamically
+        modal.style.position = 'fixed';
+        modal.style.zIndex = '9999';
+        modal.style.left = '0';
+        modal.style.top = '0';
+        modal.style.width = '100%';
+        modal.style.height = '100%';
+        modal.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
 
-    // Function to show the modal
-    function showModal() {
-        modal.style.display = 'block';
-    }
+        modalContent.style.position = 'absolute';
+        modalContent.style.top = '50%';
+        modalContent.style.left = '50%';
+        modalContent.style.transform = 'translate(-50%, -50%)';
+        modalContent.style.backgroundColor = '#fff';
+        modalContent.style.padding = '20px';
 
-    // Function to hide the modal
-    function hideModal() {
-        modal.style.display = 'none';
-    }
+        // Function to show the modal
+        function showModal() {
+            modal.style.display = 'block';
+        }
 
-    // Event listener for the Clear Scene button
-    clearButton.addEventListener('click', () => {
-        showModal();
-    });
+        // Function to hide the modal
+        function hideModal() {
+            modal.style.display = 'none';
+        }
 
-    // Event listener for the I am sure button
-    confirmButton.addEventListener('click', () => {
-    
-        // Clear the scene (replace with your code to clear the scene)
-        console.log('Scene cleared!');
-        // Hide the modal
-        hideModal();
-    });
-    */
+        // Event listener for the Clear Scene button
+        clearButton.addEventListener('click', () => {
+            showModal();
+        });
 
-    // Create clear button
-    const clearButton = document.createElement('button');
-
-    clearButton.textContent = 'CLEAR SCENE';
-
-    // Style
-    clearButton.style.padding = '5px 5px';
-    clearButton.style.fontSize = '12px';
-    clearButton.style.backgroundColor = 'rgb(198, 105, 105)';
-    clearButton.style.color = '#fff';
-    clearButton.style.border = 'none';
-    clearButton.style.borderRadius = '5px';
-
-    clearButton.style.position = 'absolute';
-    clearButton.style.top = '2%';
-    clearButton.style.right = '120px';
-    clearButton.style.zIndex = '9999'; // Place in front of scene
-
-    clearButton.style.cursor = 'pointer'; // Change cursor on hover
-
-    
-    // Visual feedback on hover
-    clearButton.addEventListener('mouseenter', function() {
-        clearButton.style.backgroundColor = 'rgb(241, 195, 195)'; // Background color on hover
-    });
-
-    clearButton.addEventListener('mouseleave', function() {
-        clearButton.style.backgroundColor = 'rgb(198, 105, 105)'; // Original background color
-    });
-
-
-    // Visual feedback on click
-    clearButton.addEventListener('mousedown', function() {
-        clearButton.style.backgroundColor = 'rgb(241, 195, 195)'; // Background color on click
-    });
-
-    clearButton.addEventListener('mouseup', function() {
-        clearButton.style.backgroundColor = 'rgb(198, 105, 105)'; // Restore original background color after click
-    });
-
-
-    document.body.appendChild(clearButton);
-
-
-    
-
-
-
-    // Add click event listener to the clear button
-    clearButton.addEventListener('click', () => {
+        // Event listener for the I am sure button
+        confirmButton.addEventListener('click', () => {
         
-        // Play clear sound
-        clearSound.play();
+            // Clear the scene (replace with your code to clear the scene)
+            console.log('Scene cleared!');
+            // Hide the modal
+            hideModal();
+        });
+        */
 
-        // Clear the scene (replace with your clear scene function)
-        clearScene();
+        // Create clear button
+        const clearButton = document.createElement('button');
 
-        // Remove focus from the button
-        clearButton.blur();
+        clearButton.textContent = 'CLEAR SCENE';
 
-    });
+        // Style
+        clearButton.style.padding = '5px 5px';
+        clearButton.style.fontSize = '12px';
+        clearButton.style.backgroundColor = 'rgb(198, 105, 105)';
+        clearButton.style.color = '#fff';
+        clearButton.style.border = 'none';
+        clearButton.style.borderRadius = '5px';
 
+        clearButton.style.position = 'absolute';
+        clearButton.style.top = '2%';
+        clearButton.style.right = '120px';
+        clearButton.style.zIndex = '9999'; // Place in front of scene
 
+        clearButton.style.cursor = 'pointer'; // Change cursor on hover
 
-
-    // clear scene function
-    function clearScene() {
         
-        // Remove all objects from the scene
-        while (scene.children.length > 0) {
+        // Visual feedback on hover
+        clearButton.addEventListener('mouseenter', function() {
+            clearButton.style.backgroundColor = 'rgb(241, 195, 195)'; // Background color on hover
+        });
 
-            scene.remove(unionMesh);
+        clearButton.addEventListener('mouseleave', function() {
+            clearButton.style.backgroundColor = 'rgb(198, 105, 105)'; // Original background color
+        });
+
+
+        // Visual feedback on click
+        clearButton.addEventListener('mousedown', function() {
+            clearButton.style.backgroundColor = 'rgb(241, 195, 195)'; // Background color on click
+        });
+
+        clearButton.addEventListener('mouseup', function() {
+            clearButton.style.backgroundColor = 'rgb(198, 105, 105)'; // Restore original background color after click
+        });
+
+
+        document.body.appendChild(clearButton);
+
+
+        
+
+
+
+        // Add click event listener to the clear button
+        clearButton.addEventListener('click', () => {
+            
+            // Play clear sound
+            clearSound.play();
+
+            // Clear the scene (replace with your clear scene function)
+            clearScene();
+
+            // Remove focus from the button
+            clearButton.blur();
+
+        });
+
+
+
+
+        // clear scene function
+        function clearScene() {
+            
+            // Remove all objects from the scene
+            while (scene.children.length > 0) {
+
+                scene.remove(unionMesh);
+
+            }
+            
+
+
+
+            // Call your animate function to render the cleared scene
+            animate();
+
+            console.log('Scene cleared!');
 
         }
-        
-
-
-
-        // Call your animate function to render the cleared scene
-        animate();
-
-        console.log('Scene cleared!');
 
     }
+
+
 
 
 
@@ -4540,6 +4663,132 @@ function startApp() {
 
             // Remove focus from the button
             muteButton.blur();
+
+        });
+
+    }
+    
+     
+
+
+
+
+
+    // -------------------------------------------------- Toolhead TYPE Selection ---------------------------------------------------
+
+    function toolheadTypeFunction() {
+
+        // ----- Toolhead TYPE -----
+
+        // Create the button element
+        var typeButton = document.createElement("button");
+        typeButton.setAttribute("id", "typeButton");
+        
+        // Create an image element for the icon
+        var typeIcon = document.createElement("img");
+        typeIcon.setAttribute("src", "icons/cube.png");
+        typeIcon.setAttribute("alt", "Toggle bgm");
+        typeIcon.style.width = '35px';
+        typeIcon.style.height = '35px';
+        typeIcon.style.position = 'absolute';
+        typeIcon.style.top = '2%';
+        typeIcon.style.left = '70px';
+        typeIcon.style.zIndex = '9999'; // place in front of scene
+        typeIcon.style.cursor = 'pointer'; // Change cursor on hover
+        
+        
+        // Append the icon image to the button
+        typeButton.appendChild(typeIcon);
+
+        // Append the button element to the body
+        document.body.appendChild(typeButton);
+
+
+
+        /*// muteButton TEXT style
+        muteButton.textContent = "Mute";
+
+        muteButton.style.padding = '5px 5px';
+        muteButton.style.fontSize = '12px'; // Set font size
+        muteButton.style.backgroundColor = 'rgb(69, 150, 69)'; // Set background color
+        muteButton.style.color = '#fff'; // Set text color
+        muteButton.style.border = 'none'; // Remove border
+        muteButton.style.borderRadius = '5px'; // Add border radius for rounded corners
+        
+        muteButton.style.position = 'absolute';
+        muteButton.style.top = '2%';
+        muteButton.style.left = '20px';
+        muteButton.style.zIndex = '9999'; // place in front of scene
+        muteButton.style.border = 'none'; // Remove border
+        muteButton.style.cursor = 'pointer'; // Change cursor on hover
+        */
+
+
+        // Visual feedback on hover
+        typeButton.addEventListener ('mouseenter', function() {
+            //muteButton.style.backgroundColor = 'rgb(180, 230, 180)'; // background color on hover
+            // exportButton.style.border = 'true';
+            typeIcon.style.filter = "brightness(120%)"; // Adjust brightness level as needed
+            typeIcon.style.opacity = "0.7"; // Adjust opacity level as needed
+        });
+
+        typeButton.addEventListener ('mouseleave', function() {
+            //muteButton.style.backgroundColor = 'rgb(69, 150, 69)'; // original background color
+            typeIcon.style.filter = "brightness(100%)"; // Adjust brightness level as needed
+            typeIcon.style.opacity = "1"; // Adjust opacity level as needed
+        });
+
+
+
+        // Visual feedback on click
+        typeButton.addEventListener ('mousedown', function() {
+            //muteButton.style.backgroundColor = 'rgb(180, 230, 180)'; // background color on click
+            typeIcon.style.filter = "brightness(120%)"; // Adjust brightness level as needed
+            typeIcon.style.opacity = "0.7"; // Adjust opacity level as needed
+        });
+
+        typeButton.addEventListener ('mouseup', function() {
+            //muteButton.style.backgroundColor = 'rgb(69, 150, 69)'; // Restore original background color after click
+            typeIcon.style.filter = "brightness(100%)"; // Adjust brightness level as needed
+            typeIcon.style.opacity = "1"; // Adjust opacity level as needed
+        });
+        
+
+
+        
+
+
+
+
+        // Set initial state
+        var isSphere = false;
+        var toolhead_type = [];
+
+        // Function to toggle mute/play
+        typeButton.addEventListener("click", function() {
+
+            if (isSphere) {
+
+                toolhead_type = 0;
+                //muteButton.textContent = "Mute";
+                typeIcon.setAttribute("src", "icons/cube.png");
+
+                console.log('toolhead Type: cube');
+
+            } else {
+
+                bgm.pause();
+                //muteButton.textContent = "Unmute";
+                typeIcon.setAttribute("src", "icons/sphere.png");
+
+                console.log('toolhead Type: sphere')
+
+            }
+
+            isSphere = !isSphere;
+
+            // Remove focus from the button
+            typeButton.blur();
 
         });
 

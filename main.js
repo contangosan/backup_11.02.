@@ -370,12 +370,14 @@ function startApp() {
 
     // Parameters
     var parameters = {
-        toolheadSize: 1
+        toolheadSize: 3,
+        toolheadType: 1
     }
 
 
     // Add sliders to GUI
-    gui.add (parameters, 'toolheadSize', 1, 10 , 1);
+    gui.add (parameters, 'toolheadSize', 1, 3 , 1);
+    gui.add (parameters, 'toolheadType', 1, 2 , 1);
 
         
     // Apply custom styling to the GUI container
@@ -405,6 +407,7 @@ function startApp() {
 
     var toolhead_speed = 0.5;
     var toolhead_size = parameters.toolheadSize;
+    var toolhead_type = parameters.toolheadType;
 
     var voxel_list = [];
 
@@ -460,6 +463,8 @@ function startApp() {
 
 
 
+    //create_box_toolhead();
+    //create_sphere_toolhead();
     create_toolhead();
 
 
@@ -884,9 +889,9 @@ function startApp() {
 
 
         // calculating the average coordinates
-        var average_of_points_x = sum_of_points_x / (toolhead_size**3 );
-        var average_of_points_y = sum_of_points_y / (toolhead_size**3 );
-        var average_of_points_z = sum_of_points_z / (toolhead_size**3 );
+        var average_of_points_x = sum_of_points_x / (toolhead_list.length );
+        var average_of_points_y = sum_of_points_y / (toolhead_list.length );
+        var average_of_points_z = sum_of_points_z / (toolhead_list.length );
 
         // refreshing the toolhead center
         toolhead_center.x = average_of_points_x
@@ -2505,11 +2510,1181 @@ function startApp() {
 
     // --------------------------------------------- TOOLHEAD FUNCTIONS ----------------------------------------------- 
 
+    
     function create_toolhead(){
+
+        if (toolhead_type == 1){
+
+            create_box_toolhead();
+            console.log("create_box_toolhead()");
+
+        }
+
+        else if (toolhead_type == 2){
+
+            create_sphere_toolhead();
+            console.log("create_sphere_toolhead()");
+
+        }
+
+
+
+    }
+
+
+
+
+
+    function create_sphere_toolhead(){
+
+
 
         toolhead_list = [];
 
 
+        /*
+
+        if (toolhead_size  == 1){
+
+            // Toolhead geometry
+            var toolhead_geometry = new THREE.BoxGeometry(0.5,0.5,0.5);
+            var toolhead = new THREE.Mesh(toolhead_geometry, toolhead_material);
+
+            //console.log(toolhead_center);
+
+            toolhead.position.set(toolhead_center.x,toolhead_center.y, toolhead_center.z );
+
+
+            //console.log(toolhead.position);
+
+
+            scene.add(toolhead);
+
+            toolhead_list.push(toolhead);
+
+
+
+            //toolhead_center = toolhead.position;
+
+        }
+
+        */
+
+
+
+        if (toolhead_size == 1) {
+
+
+            
+            
+            //toolhead_center = new THREE.Vector3(toolhead_size / 2,toolhead_size / 2,toolhead_size / 2 )
+
+
+            var _x =  toolhead_center.x +  0.5
+            var _y =  toolhead_center.y +  0.5
+            var _z =  toolhead_center.z +  0.5
+
+
+            var toolhead_coordinates = [
+
+
+                
+                [_x, _y, _z], // midlle point
+                //[_x, _y, _z +1],
+                //[_x, _y, _z -1],
+                //[_x, _y, _z -2],
+                
+
+                // oberes kreuz
+                [_x, _y, _z + 2],
+                [_x -1, _y, _z + 2],
+                [_x -1, _y -1, _z + 2],
+                [_x, _y -1, _z + 2],
+
+                [_x, _y +1, _z + 2],
+                [_x -1, _y +1, _z + 2],
+
+                [_x -2, _y, _z + 2],
+                [_x -2, _y -1, _z + 2],
+
+                [_x, _y -2, _z + 2],
+                [_x -1, _y -2, _z + 2],
+
+                [_x +1, _y, _z + 2],
+                [_x +1, _y -1, _z + 2],
+
+
+                // unteres kreuz
+                [_x, _y, _z - 3],
+                [_x -1, _y, _z - 3],
+                [_x -1, _y -1, _z - 3],
+                [_x, _y -1, _z - 3],
+
+                [_x, _y +1, _z - 3],
+                [_x -1, _y +1, _z - 3],
+
+                [_x -2, _y, _z - 3],
+                [_x -2, _y -1, _z - 3],
+
+                [_x, _y -2, _z - 3],
+                [_x -1, _y -2, _z - 3],
+
+                [_x +1, _y, _z - 3],
+                [_x +1, _y -1, _z - 3],
+
+
+
+                // rechtes kreuz
+                [_x +2, _y, _z],
+                [_x +2, _y -1, _z],
+                [_x +2, _y -1, _z -1],
+                [_x +2, _y , _z -1],
+
+                [_x +2, _y, _z +1],
+                [_x +2, _y -1, _z +1],
+
+                [_x +2, _y -2, _z],
+                [_x +2, _y -2, _z -1],
+
+                [_x +2, _y, _z -2],
+                [_x +2, _y -1, _z -2],
+
+                [_x +2, _y +1, _z],
+                [_x +2, _y +1, _z -1],
+
+
+                // linkes kreuz
+                [_x -3, _y, _z],
+                [_x -3, _y -1, _z],
+                [_x -3, _y -1, _z -1],
+                [_x -3, _y , _z -1],
+
+                [_x -3, _y, _z +1],
+                [_x -3, _y -1, _z +1],
+
+                [_x -3, _y -2, _z],
+                [_x -3, _y -2, _z -1],
+
+                [_x -3, _y, _z -2],
+                [_x -3, _y -1, _z -2],
+
+                [_x -3, _y +1, _z],
+                [_x -3, _y +1, _z -1],
+
+
+
+
+
+                // vorderes kreuz
+                [_x , _y +2, _z],
+                [_x -1 , _y +2, _z],
+                [_x -1, _y +2, _z -1],
+                [_x , _y +2, _z -1],
+
+                [_x +1, _y +2, _z],
+                [_x +1, _y +2, _z -1],
+
+                [_x , _y +2, _z -2],
+                [_x -1 , _y +2, _z -2],
+
+                [_x -2 , _y +2, _z],
+                [_x -2 , _y +2, _z -1],
+
+                [_x , _y +2, _z +1],
+                [_x -1 , _y +2, _z +1],
+                
+
+                // hinteres kreuz
+                [_x , _y -3, _z],
+                [_x -1 , _y -3, _z],
+                [_x -1, _y -3, _z -1],
+                [_x , _y -3, _z -1],
+
+                [_x +1, _y -3, _z],
+                [_x +1, _y -3, _z -1],
+
+                [_x , _y -3, _z -2],
+                [_x -1 , _y -3, _z -2],
+
+                [_x -2 , _y -3, _z],
+                [_x -2 , _y -3, _z -1],
+
+                [_x , _y -3, _z +1],
+                [_x -1 , _y -3, _z +1],
+                
+
+
+
+
+
+
+
+                
+
+
+
+
+
+            ];
+
+
+
+
+            var _x =  toolhead_center.x +  0.5 -2;
+            var _y =  toolhead_center.y +  0.5 -2;
+            var _z =  toolhead_center.z +  0.5 -2;
+
+
+            for (let x = 0 ; x < 4 ; x++){
+
+                for (let y = 0; y < 4 ; y++){
+
+                    for (let z = 0; z< 4; z++){
+
+                        /*
+
+                        toolhead = new THREE.Mesh(toolhead_geometry, toolhead_material);
+                        toolhead.position.set( _x + x   , _y + y  , _z + z );
+
+                        scene.add(toolhead);
+
+                        toolhead_list.push(toolhead);
+
+                        console.log("yes");
+
+                        */
+                        var these_coordinates = [_x + x, _y + y,_z + z];
+
+                        toolhead_coordinates.push(these_coordinates)
+
+                        
+
+                    } 
+
+
+                } 
+
+
+            }
+
+
+
+            toolhead_list = create_toolhead_from_coordinates(toolhead_coordinates);
+
+
+            
+        }
+
+
+
+
+
+        else if (toolhead_size == 2) {
+
+
+            
+            
+            //toolhead_center = new THREE.Vector3(toolhead_size / 2,toolhead_size / 2,toolhead_size / 2 )
+
+
+            var _x =  toolhead_center.x +  0.5
+            var _y =  toolhead_center.y +  0.5
+            var _z =  toolhead_center.z +  0.5
+
+
+            var toolhead_coordinates = [
+
+
+                
+                [_x, _y, _z], // midlle point
+                //[_x, _y, _z +1],
+                //[_x, _y, _z -1],
+                //[_x, _y, _z -2],
+                
+
+                // oberes kreuz
+                [_x, _y, _z + 3],
+                [_x -1, _y, _z + 3],
+                [_x -1, _y -1, _z + 3],
+                [_x, _y -1, _z + 3],
+
+                [_x, _y +1, _z + 3],
+                [_x -1, _y +1, _z + 3],
+
+                [_x -2, _y, _z + 3],
+                [_x -2, _y -1, _z + 3],
+
+                [_x, _y -2, _z + 3],
+                [_x -1, _y -2, _z + 3],
+
+                [_x +1, _y, _z + 3],
+                [_x +1, _y -1, _z + 3],
+
+
+                
+                // unteres kreuz
+                [_x, _y, _z - 4],
+                [_x -1, _y, _z - 4],
+                [_x -1, _y -1, _z - 4],
+                [_x, _y -1, _z - 4],
+
+                [_x, _y +1, _z - 4],
+                [_x -1, _y +1, _z - 4],
+
+                [_x -2, _y, _z - 4],
+                [_x -2, _y -1, _z - 4],
+
+                [_x, _y -2, _z - 4],
+                [_x -1, _y -2, _z - 4],
+
+                [_x +1, _y, _z - 4],
+                [_x +1, _y -1, _z - 4],
+
+
+                
+                // rechtes kreuz
+                [_x +3, _y, _z],
+                [_x +3, _y -1, _z],
+                [_x +3, _y -1, _z -1],
+                [_x +3, _y , _z -1],
+
+                [_x +3, _y, _z +1],
+                [_x +3, _y -1, _z +1],
+
+                [_x +3, _y -2, _z],
+                [_x +3, _y -2, _z -1],
+
+                [_x +3, _y, _z -2],
+                [_x +3, _y -1, _z -2],
+
+                [_x +3, _y +1, _z],
+                [_x +3, _y +1, _z -1],
+
+                
+                // linkes kreuz
+                [_x -4, _y, _z],
+                [_x -4, _y -1, _z],
+                [_x -4, _y -1, _z -1],
+                [_x -4, _y , _z -1],
+
+                [_x -4, _y, _z +1],
+                [_x -4, _y -1, _z +1],
+
+                [_x -4, _y -2, _z],
+                [_x -4, _y -2, _z -1],
+
+                [_x -4, _y, _z -2],
+                [_x -4, _y -1, _z -2],
+
+                [_x -4, _y +1, _z],
+                [_x -4, _y +1, _z -1],
+
+
+
+
+                
+                // vorderes kreuz
+                [_x , _y +3, _z],
+                [_x -1 , _y +3, _z],
+                [_x -1, _y +3, _z -1],
+                [_x , _y +3, _z -1],
+
+                [_x +1, _y +3, _z],
+                [_x +1, _y +3, _z -1],
+
+                [_x , _y +3, _z -2],
+                [_x -1 , _y +3, _z -2],
+
+                [_x -2 , _y +3, _z],
+                [_x -2 , _y +3, _z -1],
+
+                [_x , _y +3, _z +1],
+                [_x -1 , _y +3, _z +1],
+                
+
+                // hinteres kreuz
+                [_x , _y -4, _z],
+                [_x -1 , _y -4, _z],
+                [_x -1, _y -4, _z -1],
+                [_x , _y -4, _z -1],
+
+                [_x +1, _y -4, _z],
+                [_x +1, _y -4, _z -1],
+
+                [_x , _y -4, _z -2],
+                [_x -1 , _y -4, _z -2],
+
+                [_x -2 , _y -4, _z],
+                [_x -2 , _y -4, _z -1],
+
+                [_x , _y -4, _z +1],
+                [_x -1 , _y -4, _z +1],
+                
+                
+
+
+
+
+
+
+                
+
+
+
+
+
+            ];
+
+
+
+
+            var _x =  toolhead_center.x +  0.5 -3;
+            var _y =  toolhead_center.y +  0.5 -3;
+            var _z =  toolhead_center.z +  0.5 -3;
+
+
+            for (let x = 0 ; x < 6 ; x++){
+
+                for (let y = 0; y < 6 ; y++){
+
+                    for (let z = 0; z< 6; z++){
+
+                        /*
+
+                        toolhead = new THREE.Mesh(toolhead_geometry, toolhead_material);
+                        toolhead.position.set( _x + x   , _y + y  , _z + z );
+
+                        scene.add(toolhead);
+
+                        toolhead_list.push(toolhead);
+
+                        console.log("yes");
+
+                        */
+
+                        var these_coordinates = [_x + x, _y + y,_z + z];
+
+                        if(x == 0 && y == 0 && z == 0){
+                            console.log("nix");
+                        }
+                        else if(x == 5 && y == 0 && z == 0){
+                            console.log("nix");
+                        }
+                        else if(x == 5 && y == 5 && z == 0){
+                            console.log("nix");
+                        }
+                        else if(x == 0 && y == 5 && z == 0){
+                            console.log("nix");
+                        }
+                        else if(x == 0 && y == 0 && z == 5){
+                            console.log("nix");
+                        }
+                        else if(x == 5 && y == 0 && z == 5){
+                            console.log("nix");
+                        }
+                        else if(x == 5 && y == 5 && z == 5){
+                            console.log("nix");
+                        }
+                        else if(x == 0 && y == 5 && z == 5){
+                            console.log("nix");
+                        }
+                        else{
+                            toolhead_coordinates.push(these_coordinates)
+                        }
+                        
+
+                        
+
+                    } 
+
+
+                } 
+
+
+            }
+
+
+
+            toolhead_list = create_toolhead_from_coordinates(toolhead_coordinates);
+
+
+            
+        }
+
+
+
+
+        else if (toolhead_size == 3) {
+
+
+            
+            
+            //toolhead_center = new THREE.Vector3(toolhead_size / 2,toolhead_size / 2,toolhead_size / 2 )
+
+
+            var _x =  toolhead_center.x +  0.5
+            var _y =  toolhead_center.y +  0.5
+            var _z =  toolhead_center.z +  0.5
+
+
+            var toolhead_coordinates = [
+
+
+                
+                [_x, _y, _z], // midlle point
+                //[_x, _y, _z +1],
+                //[_x, _y, _z -1],
+                //[_x, _y, _z -2],
+                
+
+                // oberes kreuz
+                [_x, _y, _z + 5],
+                [_x , _y +1, _z + 5],
+                [_x , _y +2, _z + 5],
+                [_x , _y -1, _z + 5],
+                [_x , _y -2, _z + 5],
+
+
+                [_x -1, _y, _z + 5],
+                [_x -1 , _y +1, _z + 5],
+                [_x -1 , _y +2, _z + 5],
+                [_x -1 , _y -1, _z + 5],
+                [_x -1 , _y -2, _z + 5],
+
+                [_x -2 , _y +1, _z + 5],
+                [_x -2 , _y , _z + 5],
+                [_x -2 , _y -1, _z + 5],
+
+
+                [_x +1, _y, _z + 5],
+                [_x +1 , _y +1, _z + 5],
+                [_x +1 , _y +2, _z + 5],
+                [_x +1 , _y -1, _z + 5],
+                [_x +1 , _y -2, _z + 5],
+
+
+                [_x +2 , _y +1, _z + 5],
+                [_x +2 , _y , _z + 5],
+                [_x +2 , _y -1, _z + 5],
+
+
+
+
+
+
+                // unteres kreuz
+                [_x, _y, _z -5],
+                [_x , _y +1, _z -5],
+                [_x , _y +2, _z -5],
+                [_x , _y -1, _z -5],
+                [_x , _y -2, _z -5],
+
+
+                [_x -1, _y, _z -5],
+                [_x -1 , _y +1, _z -5],
+                [_x -1 , _y +2, _z -5],
+                [_x -1 , _y -1, _z -5],
+                [_x -1 , _y -2, _z -5],
+
+                [_x -2 , _y +1, _z -5],
+                [_x -2 , _y , _z -5],
+                [_x -2 , _y -1, _z -5],
+
+
+                [_x +1, _y, _z -5],
+                [_x +1 , _y +1, _z -5],
+                [_x +1 , _y +2, _z -5],
+                [_x +1 , _y -1, _z -5],
+                [_x +1 , _y -2, _z -5],
+
+
+                [_x +2 , _y +1, _z -5],
+                [_x +2 , _y , _z -5],
+                [_x +2 , _y -1, _z -5],
+
+
+
+
+                // linkes kreuz
+                [_x -5, _y, _z],
+                [_x -5, _y, _z +1],
+                [_x -5, _y, _z -1],
+                [_x -5, _y, _z +2],
+                [_x -5, _y, _z -2],
+
+                [_x -5, _y +1, _z],
+                [_x -5, _y +1, _z +1],
+                [_x -5, _y +1, _z -1],
+                [_x -5, _y +1, _z +2],
+                [_x -5, _y +1, _z -2],
+
+                [_x -5, _y +2, _z],
+                [_x -5, _y +2, _z +1],
+                [_x -5, _y +2, _z -1],
+
+
+                [_x -5, _y -1, _z],
+                [_x -5, _y -1, _z +1],
+                [_x -5, _y -1, _z -1],
+                [_x -5, _y -1, _z +2],
+                [_x -5, _y -1, _z -2],
+
+                [_x -5, _y -2, _z],
+                [_x -5, _y -2, _z +1],
+                [_x -5, _y -2, _z -1],
+
+
+                // rechtes kreuz
+                [_x +5, _y, _z],
+                [_x +5, _y, _z +1],
+                [_x +5, _y, _z -1],
+                [_x +5, _y, _z +2],
+                [_x +5, _y, _z -2],
+
+                [_x +5, _y +1, _z],
+                [_x +5, _y +1, _z +1],
+                [_x +5, _y +1, _z -1],
+                [_x +5, _y +1, _z +2],
+                [_x +5, _y +1, _z -2],
+
+                [_x +5, _y +2, _z],
+                [_x +5, _y +2, _z +1],
+                [_x +5, _y +2, _z -1],
+
+
+                [_x +5, _y -1, _z],
+                [_x +5, _y -1, _z +1],
+                [_x +5, _y -1, _z -1],
+                [_x +5, _y -1, _z +2],
+                [_x +5, _y -1, _z -2],
+
+                [_x +5, _y -2, _z],
+                [_x +5, _y -2, _z +1],
+                [_x +5, _y -2, _z -1],
+
+
+
+                // hinteres kreuz
+                [_x , _y -5, _z],
+                [_x , _y -5, _z +1],
+                [_x , _y -5, _z -1],
+                [_x , _y -5, _z +2],
+                [_x , _y -5, _z -2],
+
+                [_x -1 , _y -5, _z],
+                [_x -1 , _y -5, _z +1],
+                [_x -1 , _y -5, _z -1],
+                [_x -1 , _y -5, _z +2],
+                [_x -1 , _y -5, _z -2],
+
+                [_x -2 , _y -5, _z],
+                [_x -2 , _y -5, _z +1],
+                [_x -2 , _y -5, _z -1],
+
+
+                [_x +1 , _y -5, _z],
+                [_x +1 , _y -5, _z +1],
+                [_x +1 , _y -5, _z -1],
+                [_x +1 , _y -5, _z +2],
+                [_x +1 , _y -5, _z -2],
+
+                [_x +2 , _y -5, _z],
+                [_x +2 , _y -5, _z +1],
+                [_x +2 , _y -5, _z -1],
+
+
+                // vorderes kreuz
+                [_x , _y +5, _z],
+                [_x , _y +5, _z +1],
+                [_x , _y +5, _z -1],
+                [_x , _y +5, _z +2],
+                [_x , _y +5, _z -2],
+
+                [_x -1 , _y +5, _z],
+                [_x -1 , _y +5, _z +1],
+                [_x -1 , _y +5, _z -1],
+                [_x -1 , _y +5, _z +2],
+                [_x -1 , _y +5, _z -2],
+
+                [_x -2 , _y +5, _z],
+                [_x -2 , _y +5, _z +1],
+                [_x -2 , _y +5, _z -1],
+
+
+                [_x +1 , _y +5, _z],
+                [_x +1 , _y +5, _z +1],
+                [_x +1 , _y +5, _z -1],
+                [_x +1 , _y +5, _z +2],
+                [_x +1 , _y +5, _z -2],
+
+                [_x +2 , _y +5, _z],
+                [_x +2 , _y +5, _z +1],
+                [_x +2 , _y +5, _z -1],
+
+
+
+
+
+            ];
+
+
+
+
+
+
+
+
+
+            
+
+
+
+
+
+
+
+            // 2. layer unten
+            var _x =  toolhead_center.x +  0.5 -4;
+            var _y =  toolhead_center.y +  0.5 -4;
+            var _z =  toolhead_center.z +  0.5 -4;
+
+            for (let x = 1 ; x < 8 ; x++){
+
+                for (let y = 1; y < 8 ; y++){
+
+                    var z = 0;
+
+                    
+
+                    var these_coordinates = [_x + x, _y + y,_z + z];
+
+                    if(x == 1 && y == 1 ){
+                        console.log("nix");
+                    }
+                    else if(x == 7 && y == 1 ){
+                        console.log("nix");
+                    }
+                    else if(x == 7 && y == 7 ){
+                        console.log("nix");
+                    }
+                    else if(x == 1 && y == 7 ){
+                        console.log("nix");
+                    }
+                    else{
+                        toolhead_coordinates.push(these_coordinates)
+                    }
+                    
+
+                } 
+
+
+            }
+
+
+
+            // 2. layer oben
+            var _x =  toolhead_center.x +  0.5 -4;
+            var _y =  toolhead_center.y +  0.5 -4;
+            var _z =  toolhead_center.z +  0.5 +4;
+
+            for (let x = 1 ; x < 8 ; x++){
+
+                for (let y = 1; y < 8 ; y++){
+
+                    var z = 0;
+
+                    
+
+                    var these_coordinates = [_x + x, _y + y,_z + z];
+
+                    if(x == 1 && y == 1 ){
+                        console.log("nix");
+                    }
+                    else if(x == 7 && y == 1 ){
+                        console.log("nix");
+                    }
+                    else if(x == 7 && y == 7 ){
+                        console.log("nix");
+                    }
+                    else if(x == 1 && y == 7 ){
+                        console.log("nix");
+                    }
+                    else{
+                        toolhead_coordinates.push(these_coordinates)
+                    }
+                    
+
+                } 
+
+
+            }
+
+
+
+            // 2. layer links
+            var _x =  toolhead_center.x +  0.5 -4;
+            var _y =  toolhead_center.y +  0.5 -4;
+            var _z =  toolhead_center.z +  0.5 -4;
+
+            for (let y = 1 ; y < 8 ; y++){
+
+                for (let z = 1; z < 8 ; z++){
+
+                    var x = 0;
+
+
+                    
+
+                    var these_coordinates = [_x + x, _y + y,_z + z];
+
+                    if(y == 1 && z == 1 ){
+                        console.log("nix");
+                    }
+                    else if(y == 7 && z == 1 ){
+                        console.log("nix");
+                    }
+                    else if(y == 7 && z == 7 ){
+                        console.log("nix");
+                    }
+                    else if(y == 1 && z == 7 ){
+                        console.log("nix");
+                    }
+                    else{
+                        toolhead_coordinates.push(these_coordinates)
+                    }
+                    
+
+                } 
+
+
+            }
+
+
+            // 2. layer rechts
+            var _x =  toolhead_center.x +  0.5 +4;
+            var _y =  toolhead_center.y +  0.5 -4;
+            var _z =  toolhead_center.z +  0.5 -4;
+
+            for (let y = 1 ; y < 8 ; y++){
+
+                for (let z = 1; z < 8 ; z++){
+
+                    var x = 0;
+
+
+                    
+
+                    var these_coordinates = [_x + x, _y + y,_z + z];
+
+                    if(y == 1 && z == 1 ){
+                        console.log("nix");
+                    }
+                    else if(y == 7 && z == 1 ){
+                        console.log("nix");
+                    }
+                    else if(y == 7 && z == 7 ){
+                        console.log("nix");
+                    }
+                    else if(y == 1 && z == 7 ){
+                        console.log("nix");
+                    }
+                    else{
+                        toolhead_coordinates.push(these_coordinates)
+                    }
+                    
+
+                } 
+
+
+            }
+
+
+
+            // 2. layer hinten
+            var _x =  toolhead_center.x +  0.5 -4;
+            var _y =  toolhead_center.y +  0.5 -4;
+            var _z =  toolhead_center.z +  0.5 -4;
+ 
+             for (let x = 1 ; x < 8 ; x++){
+ 
+                 for (let z = 1; z < 8 ; z++){
+ 
+                    var y = 0;
+
+
+                    
+
+                    var these_coordinates = [_x + x, _y + y,_z + z];
+
+                    if(x == 1 && z == 1 ){
+                        console.log("nix");
+                    }
+                    else if(x == 7 && z == 1 ){
+                        console.log("nix");
+                    }
+                    else if(x == 7 && z == 7 ){
+                        console.log("nix");
+                    }
+                    else if(x == 1 && z == 7 ){
+                        console.log("nix");
+                    }
+                    else{
+                        toolhead_coordinates.push(these_coordinates)
+                    }
+                    
+ 
+                } 
+ 
+ 
+            }
+
+
+            // 2. layer vorne
+            var _x =  toolhead_center.x +  0.5 -4;
+            var _y =  toolhead_center.y +  0.5 +4;
+            var _z =  toolhead_center.z +  0.5 -4;
+    
+                for (let x = 1 ; x < 8 ; x++){
+    
+                    for (let z = 1; z < 8 ; z++){
+    
+                    var y = 0;
+
+
+                    
+
+                    var these_coordinates = [_x + x, _y + y,_z + z];
+
+                    if(x == 1 && z == 1 ){
+                        console.log("nix");
+                    }
+                    else if(x == 7 && z == 1 ){
+                        console.log("nix");
+                    }
+                    else if(x == 7 && z == 7 ){
+                        console.log("nix");
+                    }
+                    else if(x == 1 && z == 7 ){
+                        console.log("nix");
+                    }
+                    else{
+                        toolhead_coordinates.push(these_coordinates)
+                    }
+                    
+    
+                } 
+    
+    
+            }
+ 
+            
+ 
+
+
+
+
+
+
+
+
+
+            // innerer würfel
+            var _x =  toolhead_center.x +  0.5 -3;
+            var _y =  toolhead_center.y +  0.5 -3;
+            var _z =  toolhead_center.z +  0.5 -3;
+
+
+
+            for (let x = 0 ; x < 7 ; x++){
+
+                for (let y = 0; y < 7 ; y++){
+
+                    for (let z = 0; z< 7; z++){
+
+                        /*
+
+                        toolhead = new THREE.Mesh(toolhead_geometry, toolhead_material);
+                        toolhead.position.set( _x + x   , _y + y  , _z + z );
+
+                        scene.add(toolhead);
+
+                        toolhead_list.push(toolhead);
+
+                        console.log("yes");
+
+                        */
+
+                        var these_coordinates = [_x + x, _y + y,_z + z];
+
+                        toolhead_coordinates.push(these_coordinates);
+                        
+
+                    } 
+
+
+                } 
+
+
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+            toolhead_list = create_toolhead_from_coordinates(toolhead_coordinates);
+
+
+            
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        console.log(toolhead_list.length)
+
+
+    }
+
+
+
+
+    /*
+    var _x =  toolhead_center.x +  0.5 -5;
+            var _y =  toolhead_center.y +  0.5 -5;
+            var _z =  toolhead_center.z +  0.5 -5;
+
+            for (let x = 0 ; x < 6 ; x++){
+
+                for (let y = 0; y < 6 ; y++){
+
+                    for (let z = 0; z< 6; z++){
+
+                        
+
+                        var these_coordinates = [_x + x, _y + y,_z + z];
+
+                        if(x == 0 && y == 0 && z == 0){
+                            console.log("nix");
+                        }
+                        else if(x == 5 && y == 0 && z == 0){
+                            console.log("nix");
+                        }
+                        else if(x == 5 && y == 5 && z == 0){
+                            console.log("nix");
+                        }
+                        else if(x == 0 && y == 5 && z == 0){
+                            console.log("nix");
+                        }
+                        else if(x == 0 && y == 0 && z == 5){
+                            console.log("nix");
+                        }
+                        else if(x == 5 && y == 0 && z == 5){
+                            console.log("nix");
+                        }
+                        else if(x == 5 && y == 5 && z == 5){
+                            console.log("nix");
+                        }
+                        else if(x == 0 && y == 5 && z == 5){
+                            console.log("nix");
+                        }
+                        else{
+                            //toolhead_coordinates.push(these_coordinates)
+                        }
+                        
+
+                        
+
+                    } 
+
+
+                } 
+
+
+            }
+
+
+
+    */
+
+
+
+
+
+
+
+
+
+
+
+    function create_toolhead_from_coordinates(i_coordinates_list){
+
+
+        var toolhead_geometry = new THREE.BoxGeometry(0.5,0.5,0.5);
+
+        var coordinates_list = i_coordinates_list;
+
+        var this_toolhead_list = [];
+
+        for( let i = 0; i < coordinates_list.length; i++){
+
+
+            var toolhead = new THREE.Mesh(toolhead_geometry, toolhead_material);
+            toolhead.position.set( coordinates_list[i][0]  , coordinates_list[i][1]   , coordinates_list[i][2] );
+
+            this_toolhead_list.push(toolhead);
+            scene.add(toolhead);
+
+
+        }
+
+        return this_toolhead_list;
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    function create_box_toolhead(){
+
+        toolhead_list = [];
+
+
+
+        /*
         if (toolhead_size  == 1){
 
             // Toolhead geometry
@@ -2569,6 +3744,126 @@ function startApp() {
         }
 
 
+        */
+
+        if(toolhead_size == 1) {
+
+
+            var cube_size = 3;
+
+
+            var toolhead_geometry = new THREE.BoxGeometry(0.5,0.5,0.5);
+            
+            //toolhead_center = new THREE.Vector3(toolhead_size / 2,toolhead_size / 2,toolhead_size / 2 )
+
+            for (let x = - cube_size / 2 ; x < cube_size / 2 ; x++){
+
+                for (let y = -cube_size / 2; y < cube_size / 2 ; y++){
+
+                    for (let z = -cube_size / 2; z< cube_size / 2 ; z++){
+
+                        var toolhead = new THREE.Mesh(toolhead_geometry, toolhead_material);
+                        toolhead.position.set( toolhead_center.x + x + 0.5   , toolhead_center.y + y + 0.5 , toolhead_center.z + z+ 0.5);
+                        scene.add(toolhead);
+
+                        toolhead_list.push(toolhead);
+
+                        
+
+                    } 
+
+
+                } 
+
+
+            }
+            
+            
+        }
+
+
+
+
+
+        if(toolhead_size == 2) {
+
+
+            var cube_size = 6;
+
+
+            var toolhead_geometry = new THREE.BoxGeometry(0.5,0.5,0.5);
+            
+            //toolhead_center = new THREE.Vector3(toolhead_size / 2,toolhead_size / 2,toolhead_size / 2 )
+
+            for (let x = - cube_size / 2 ; x < cube_size / 2 ; x++){
+
+                for (let y = -cube_size / 2; y < cube_size / 2 ; y++){
+
+                    for (let z = -cube_size / 2; z< cube_size / 2 ; z++){
+
+                        var toolhead = new THREE.Mesh(toolhead_geometry, toolhead_material);
+                        toolhead.position.set( toolhead_center.x + x + 0.5   , toolhead_center.y + y + 0.5 , toolhead_center.z + z+ 0.5);
+                        scene.add(toolhead);
+
+                        toolhead_list.push(toolhead);
+
+                        
+
+                    } 
+
+
+                } 
+
+
+            }
+            
+            
+        }
+
+
+
+
+        if(toolhead_size == 3) {
+
+
+            var cube_size = 9;
+
+
+            var toolhead_geometry = new THREE.BoxGeometry(0.5,0.5,0.5);
+            
+            //toolhead_center = new THREE.Vector3(toolhead_size / 2,toolhead_size / 2,toolhead_size / 2 )
+
+            for (let x = - cube_size / 2 ; x < cube_size / 2 ; x++){
+
+                for (let y = -cube_size / 2; y < cube_size / 2 ; y++){
+
+                    for (let z = -cube_size / 2; z< cube_size / 2 ; z++){
+
+                        var toolhead = new THREE.Mesh(toolhead_geometry, toolhead_material);
+                        toolhead.position.set( toolhead_center.x + x + 0.5   , toolhead_center.y + y + 0.5 , toolhead_center.z + z+ 0.5);
+                        scene.add(toolhead);
+
+                        toolhead_list.push(toolhead);
+
+                        
+
+                    } 
+
+
+                } 
+
+
+            }
+            
+            
+        }
+
+        
+
+
+
+
+
         /*
         else if (toolhead_size == 2) {
 
@@ -2615,6 +3910,7 @@ function startApp() {
         for (let i = 0; i < toolhead_list.length; i++) {
 
             removeObject( toolhead_list[i]);
+            //toolhead_list = [];
 
         }
 
@@ -3287,14 +4583,17 @@ function startApp() {
 
         requestAnimationFrame( animate );
     
-        control.update();
-
-        if (toolhead_size != parameters.toolheadSize){
+        control.update()
+    
+        // condition for recreating toolhead if parameters change
+        if (toolhead_size != parameters.toolheadSize || toolhead_type != parameters.toolheadType){
 
             toolhead_size = parameters.toolheadSize;
+            toolhead_type = parameters.toolheadType;
 
             remove_toolhead();
             create_toolhead();
+            //create_box_toolhead();
 
         }
     
@@ -3312,6 +4611,8 @@ function startApp() {
 
         //console.log(count);
         console.log(voxel_position_list.length);
+
+        console.log(toolhead_center);
 
     }
 

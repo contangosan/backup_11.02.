@@ -137,8 +137,12 @@ const startSound = new Audio ('sounds/startButton.wav');
 
 
 // --- Create Mesh ---   @ booleanUnion 3
-const createSound = new Audio ('sounds/plop.mp3');
+//const createSound = new Audio ('sounds/plop.mp3');
 //const createSound = new Audio ('sounds/bam_kai.mp3');
+const createSound = new Audio ('sounds/pop.mp3');
+
+
+const erase_Sound = new Audio ('sounds/brr.mp3');
 
 
 // --- Export Button ---
@@ -2155,6 +2159,9 @@ function startApp() {
 
                     if (   voxel_grid [var_x] [var_y] [var_z]  == 0  ) {
 
+
+
+
                         //console.log( voxel_grid[Math.floor ( toolhead.position.x ) ][ Math.floor(toolhead.position.y)]  );
                         //console.log("000")
 
@@ -2280,6 +2287,13 @@ function startApp() {
 
             // gets inlyx executed if minimum 1 new voxel can be created
             if (create_new_voxels == true){
+
+                //Audible feedback
+                createSound.play();
+
+
+
+
 
             
                 removeObject( voxel_list[0]);
@@ -2682,6 +2696,12 @@ function startApp() {
 
             // gets inlyx executed if minimum 1 new voxel can be created
             if (erase_voxels == true){
+
+
+
+
+                //Audible feedback
+                erase_Sound.play();
 
                 console.log("JAAAAAA");
 

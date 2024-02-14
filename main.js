@@ -24,6 +24,37 @@ import { STLExporter } from 'three/examples/jsm/exporters/STLExporter.js';
 
 
 
+// --------------------------------------------- COLORS -----------------------------------------------
+
+
+
+// BLACK
+
+// background
+const background_color = new THREE.Color("rgb(0,0,0)");
+// toolhead mesh
+var display_toolhead_material = new THREE.MeshBasicMaterial( { color: 0xff8800, wireframe: false, transparent: true, opacity: 0.5} );
+// helpoer lines
+//const helper_lines_material = new THREE.LineBasicMaterial( { color: 'rgb(0, 0, 205)' } );
+//const helper_lines_material = new THREE.LineBasicMaterial( { color: 'rgb(0, 0, 105)' } );
+const helper_lines_material = new THREE.LineBasicMaterial( { color: 'rgb(72, 61, 139)' } );
+//const helper_lines_material = new THREE.LineBasicMaterial( { color: 'rgb(255, 20, 157)' } );
+
+
+
+
+// WHITE
+
+// background
+//const bacjground_color = new THREE.Color("rgb(255, 255, 255)");
+// toolhead mesh
+//var display_toolhead_material = new THREE.MeshBasicMaterial( { color: "rgb(111, 151, 216)", wireframe: false, transparent: true, opacity: 0.5} );
+// helper lines
+//const helper_lines_material = new THREE.LineBasicMaterial( { color: 'rgb(241, 228, 195)' } );
+
+
+
+
 
 /* --------------------------------------------- Color Palette -----------------------------------------------
 
@@ -93,25 +124,26 @@ const bgm = document.createElement("audio");
 bgm.setAttribute("id", "bgm");
 bgm.setAttribute("loop", "");
 //bgm.innerHTML = '<source src = "sounds/wii.mp3", type = "audio/mpeg">';
+bgm.innerHTML = '<source src = "sounds/vaporwave.mp3", type = "audio/mpeg">';
 document.body.appendChild(bgm);
 
 
 
 // --- Start Button ---
 //startButton = [];
-//const startSound = new Audio ('sounds/startButton.wav');
+const startSound = new Audio ('sounds/startButton.wav');
 //const startSound = new Audio ('sounds/drankdrugs.mp3');
-const startSound = new Audio ('sounds/start_jk.mp3');
+//const startSound = new Audio ('sounds/start_jk.mp3');
 
 
 // --- Create Mesh ---   @ booleanUnion 3
-//const createSound = new Audio ('sounds/plop.mp3');
-const createSound = new Audio ('sounds/bam_kai.mp3');
+const createSound = new Audio ('sounds/plop.mp3');
+//const createSound = new Audio ('sounds/bam_kai.mp3');
 
 
 // --- Export Button ---
-//const exportSound = new Audio ('sounds/staple.wav');
-const exportSound = new Audio ('sounds/export_jona.mp3');
+const exportSound = new Audio ('sounds/staple.wav');
+//const exportSound = new Audio ('sounds/export_jona.mp3');
 
 
 // --- Clear Button ---
@@ -119,7 +151,10 @@ const clearSound = new Audio('sounds/clearButton.wav');
 
 
 // --- Toolhead Type Button ---
-const toolheadTypeSound = new Audio('sounds/plop_switch.mp3');
+//const toolheadTypeSound = new Audio('sounds/plop_switch.mp3');
+const toolheadTypeSound = new Audio('sounds/selectButton.wav');
+
+
 
 // --- Toolhead Type Button ---
 const toolheadSizeSound = new Audio('sounds/size_switch.mp3');
@@ -146,6 +181,14 @@ const toolheadSizeSound = new Audio('sounds/size_switch.mp3');
 // ---------------------------------------------- LANDING PAGE ------------------------------------------------- 
 // -------------------------------------------------------------------------------------------------------------
 
+const landingscene = new THREE.Scene();
+
+//const color = new THREE.Color("rgb(255, 255, 255)");
+//const color = new THREE.Color("rgb(255, 255, 236)");
+
+
+
+landingscene.backgroundColor = background_color;
 
 
 // --------------------------------------------- Dynamic "Start" button -----------------------------------------------
@@ -156,7 +199,22 @@ startButton.textContent = 'START APP';
 
 startButton.style.padding = '30px 60px';
 startButton.style.fontSize = '20px';
-startButton.style.backgroundColor = 'rgb(198, 169, 105)';
+
+
+
+//olor: 0xff8800
+
+
+// old background color
+//startButton.style.backgroundColor = 'rgb(198, 169, 105)';
+
+// new background color
+startButton.style.backgroundColor = 'rgb(255,136,0)';
+
+
+//var start_button_color = new THREE.Color(0xff8800);
+//startButton.style.backgroundColor = start_button_color;
+
 startButton.style.color = '#fff';
 startButton.style.border = 'none';
 startButton.style.borderRadius = '10px';
@@ -170,24 +228,26 @@ startButton.style.cursor = 'pointer'; // Change cursor on hover
 
 
 
+
 // Visual feedback on hover
 startButton.addEventListener ('mouseenter', function() {
-    startButton.style.backgroundColor = 'rgb(241, 228, 195)'; // Darker background color on hover
+    startButton.style.backgroundColor = 'rgb(0,0,205)'; // Darker background color on hover
     startButton.style.border = 'true';
 });
 
 startButton.addEventListener ('mouseleave', function() {
-    startButton.style.backgroundColor = 'rgb(198, 169, 105)'; // Restore original background color
+    startButton.style.backgroundColor = 'rgb(255,136,0)'; // Restore original background color
+    //startButton.style.backgroundColor = start_button_color;
 });
 
 
 // Visual feedback on click
 startButton.addEventListener ('mousedown', function() {
-    startButton.style.backgroundColor = 'rgb(241, 228, 195)'; // Darker background color on click
+    startButton.style.backgroundColor = 'rgb(0,0,205)'; // Darker background color on click
 });
 
 startButton.addEventListener ('mouseup', function() {
-    startButton.style.backgroundColor = 'rgb(198, 169, 105)'; // Restore original background color after click
+    startButton.style.backgroundColor = 'rgb(255,136,0)'; // Restore original background color after click
 });
 
 
@@ -197,7 +257,7 @@ startButton.addEventListener ('click', function() {
 
     // Play start sound
     startSound.play();
-    bgm.play();
+    bgm.pause();
 
 
     startButton.style.display = 'none'; // Hide the button
@@ -220,16 +280,6 @@ document.body.appendChild (startButton); // Append button at the end of the body
 // --------------------------------------------- Video (Show Reel) -----------------------------------------------
 
 const videoLink = document.createElement('button');
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -295,13 +345,22 @@ function startApp() {
 
 
 
-    // --------------------------------------------- SCENE -----------------------------------------------
+
+
+
+
+
 
     const scene = new THREE.Scene();
 
     //const color = new THREE.Color("rgb(255, 255, 255)");
-    const color = new THREE.Color("rgb(255, 255, 236)");
-    scene.background = color;
+    //const color = new THREE.Color("rgb(255, 255, 236)");
+ 
+   
+
+    scene.background = background_color;
+
+
 
 
 
@@ -381,9 +440,9 @@ function startApp() {
 
     // --------------------------------------------- PARAMETERS -----------------------------------------------
 
-    var x_size = 100;
-    var y_size = 100;
-    var z_size = 100;
+    var x_size = 80;
+    var y_size = 80;
+    var z_size = 80;
 
     var toolhead_speed = 0.1;
     //var toolhead_size = parameters.toolheadSize;
@@ -415,9 +474,9 @@ function startApp() {
 
 
     // display toolhead material
-    var display_toolhead_material = new THREE.MeshBasicMaterial( { color: "rgb(111, 151, 216)", wireframe: false, transparent: true, opacity: 0.5} );
+ 
 
-
+    //0x888888
     // point geometry
     var point_geometry = new THREE.BufferGeometry();
     var point_material = new THREE.PointsMaterial( { size: 1, color: 0x000000 } );
@@ -661,7 +720,7 @@ function startApp() {
     // --------------------------------------------- HELPER LINES ----------------------------------------------- 
     */
 
-    const material = new THREE.LineBasicMaterial( { color: 'rgb(241, 228, 195)' } );
+    
 
 
     for (let i = 0; i<= y_size; i++) {
@@ -671,7 +730,7 @@ function startApp() {
         points.push( new THREE.Vector3( x_size, i, 0 ) ); 
 
         const buffer_geometry = new THREE.BufferGeometry().setFromPoints( points );
-        const line = new THREE.Line( buffer_geometry, material );
+        const line = new THREE.Line( buffer_geometry, helper_lines_material );
 
         scene.add( line );
     }
@@ -684,7 +743,7 @@ function startApp() {
         points.push( new THREE.Vector3( i, y_size, 0 ) ); 
 
         const buffer_geometry = new THREE.BufferGeometry().setFromPoints( points );
-        const line = new THREE.Line( buffer_geometry, material );
+        const line = new THREE.Line( buffer_geometry, helper_lines_material );
 
         scene.add( line );
     }
@@ -771,6 +830,18 @@ function startApp() {
     
     //var first_height_line = true;
 
+
+
+    var height_line_list = [];
+
+
+
+  
+
+
+
+
+
     var toolhead_center_xy = toolhead_center.clone();
     toolhead_center_xy.z = 0;
 
@@ -778,16 +849,62 @@ function startApp() {
     var height_line_geometry = new THREE.BufferGeometry().setFromPoints([toolhead_center, toolhead_center_xy]);
 
     // Erstellen Sie das Material für die Linie (z.B. rote Farbe)
-    var height_line_material = new THREE.LineBasicMaterial({ color: 0xff0000 });
+    var height_line_material = new THREE.LineBasicMaterial({ color: 0xff8800 });
 
 
     // Erstellen Sie die Linie und fügen Sie sie der Szene hinzu
     var height_line = new THREE.Line(height_line_geometry, height_line_material);
     
 
-    var height_line_list = [];
+    
     height_line_list.push(height_line);
     scene.add(height_line);
+
+
+
+
+
+
+
+    var end_sphere_radius = 0.25; // Radius der Kugel
+    //var widthSegments = 32; // Anzahl der horizontalen Segmente
+    //var heightSegments = 32; // Anzahl der vertikalen Segmente
+    var end_sphere_geometry = new THREE.SphereGeometry(end_sphere_radius);
+    
+    
+    // 2. Erstelle das Material
+    var end_sphere_material = new THREE.MeshBasicMaterial({ color: 0xff8800 }); // Zum Beispiel rotes Material
+    
+    
+    // 3. Kombiniere die Geometrie und das Material zu einer Mesh
+    var end_sphere = new THREE.Mesh(end_sphere_geometry, end_sphere_material);
+    var end_sphere_up = new THREE.Mesh(end_sphere_geometry, end_sphere_material);
+
+
+    end_sphere.position.copy(toolhead_center_xy);
+    end_sphere_up.position.copy(toolhead_center);
+    
+    // 4. Füge die Mesh zur Szene hinzu
+    
+
+
+
+
+
+
+
+    height_line_list.push(end_sphere);
+    height_line_list.push(end_sphere_up);
+    scene.add(end_sphere);
+    scene.add(end_sphere_up);
+
+
+    //console.log(end_sphere);
+
+
+
+
+
 
 
 
@@ -799,6 +916,8 @@ function startApp() {
       
                         
         console.log("height_line_list.length = " + height_line_list.length);
+        removeObject(height_line_list[2]);
+        removeObject(height_line_list[1]);
         removeObject(height_line_list[0]);
         height_line_list = [];
         console.log("height_line_list.length = " + height_line_list.length);
@@ -822,6 +941,28 @@ function startApp() {
         scene.add(height_line);
 
         height_line_list.push(height_line);
+
+
+
+
+
+
+
+        var end_sphere = new THREE.Mesh(end_sphere_geometry, end_sphere_material);
+        var end_sphere_up = new THREE.Mesh(end_sphere_geometry, end_sphere_material);
+
+
+        end_sphere.position.copy(toolhead_center_xy);
+        end_sphere_up.position.copy(toolhead_center);
+        // 4. Füge die Mesh zur Szene hinzu
+ 
+        height_line_list.push(end_sphere);
+        height_line_list.push(end_sphere_up);
+        scene.add(end_sphere);
+        scene.add(end_sphere_up);
+
+
+
 
 
         console.log("HEIGHTLINE");
@@ -5046,7 +5187,11 @@ function startApp() {
         // style
         exportButton.style.padding = '5px 5px';
         exportButton.style.fontSize = '12px'; // Set font size
-        exportButton.style.backgroundColor = 'rgb(69, 150, 69)'; // Set background color
+
+
+
+
+
         exportButton.style.color = '#fff'; // Set text color
         exportButton.style.border = 'none'; // Remove border
         exportButton.style.borderRadius = '5px'; // Add border radius for rounded corners
@@ -5060,29 +5205,49 @@ function startApp() {
 
 
         document.body.appendChild(exportButton);
-        
 
+
+
+
+
+
+
+
+        // CHANGE COLORS FOR EXPORT BUTTON HERE
+        
+        //exportButton.style.backgroundColor = 'rgb(69, 150, 69)'; // Set background color
+        exportButton.style.backgroundColor = 'rgb(64,224,208)'; // Set background color
 
         // Visual feedback on hover
         exportButton.addEventListener ('mouseenter', function() {
-            exportButton.style.backgroundColor = 'rgb(180, 230, 180)'; // background color on hover
+            //exportButton.style.backgroundColor = 'rgb(180, 230, 180)'; // background color on hover
+            exportButton.style.backgroundColor = 'rgb(175, 238, 238)'; // background color on hover
             // exportButton.style.border = 'true';
         });
 
         exportButton.addEventListener ('mouseleave', function() {
-            exportButton.style.backgroundColor = 'rgb(69, 150, 69)'; // original background color
+            //exportButton.style.backgroundColor = 'rgb(69, 150, 69)'; // original background color
+            exportButton.style.backgroundColor = 'rgb(64,224,208)'; // original background color
         });
 
 
 
         // Visual feedback on click
         exportButton.addEventListener ('mousedown', function() {
-            exportButton.style.backgroundColor = 'rgb(180, 230, 180)'; // background color on click
+            //exportButton.style.backgroundColor = 'rgb(180, 230, 180)'; // background color on click
+            exportButton.style.backgroundColor = 'rgb(175, 238, 238)'; // background color on click
         });
 
         exportButton.addEventListener ('mouseup', function() {
-            exportButton.style.backgroundColor = 'rgb(69, 150, 69)'; // original background color
+            //exportButton.style.backgroundColor = 'rgb(69, 150, 69)'; // original background color
+            exportButton.style.backgroundColor = 'rgb(64,224,208)'; // original background color
         });
+
+
+
+
+
+
 
 
 
@@ -5328,36 +5493,44 @@ function startApp() {
         // Style
         clearButton.style.padding = '5px 5px';
         clearButton.style.fontSize = '12px';
-        clearButton.style.backgroundColor = 'rgb(198, 105, 105)';
+       
         clearButton.style.color = '#fff';
         clearButton.style.border = 'none';
         clearButton.style.borderRadius = '5px';
 
         clearButton.style.position = 'absolute';
         clearButton.style.top = '2%';
-        clearButton.style.right = '120px';
+        clearButton.style.right = '110px';
         clearButton.style.zIndex = '9999'; // Place in front of scene
 
         clearButton.style.cursor = 'pointer'; // Change cursor on hover
 
+
+        //clearButton.style.backgroundColor = 'rgb(198, 105, 105)';
+        clearButton.style.backgroundColor = 'rgb(255,105,180)';
+
         
         // Visual feedback on hover
         clearButton.addEventListener('mouseenter', function() {
-            clearButton.style.backgroundColor = 'rgb(241, 195, 195)'; // Background color on hover
+            //clearButton.style.backgroundColor = 'rgb(241, 195, 195)'; // Background color on hover
+            clearButton.style.backgroundColor = 'rgb(255,182,193)'; // Background color on hover
         });
 
         clearButton.addEventListener('mouseleave', function() {
-            clearButton.style.backgroundColor = 'rgb(198, 105, 105)'; // Original background color
+            //clearButton.style.backgroundColor = 'rgb(198, 105, 105)'; // Original background color
+            clearButton.style.backgroundColor = 'rgb(255,105,180)';
         });
 
 
         // Visual feedback on click
         clearButton.addEventListener('mousedown', function() {
-            clearButton.style.backgroundColor = 'rgb(241, 195, 195)'; // Background color on click
+            //clearButton.style.backgroundColor = 'rgb(241, 195, 195)'; // Background color on click
+            clearButton.style.backgroundColor = 'rgb(255,182,193)'; // Background color on hover
         });
 
         clearButton.addEventListener('mouseup', function() {
-            clearButton.style.backgroundColor = 'rgb(198, 105, 105)'; // Restore original background color after click
+            //clearButton.style.backgroundColor = 'rgb(198, 105, 105)'; // Restore original background color after click
+            clearButton.style.backgroundColor = 'rgb(255,105,180)';
         });
 
 
@@ -5410,7 +5583,7 @@ function startApp() {
 
 
             // Call your animate function to render the cleared scene
-            animate();
+            //animate();
 
             console.log('Scene cleared!');
 
@@ -5436,11 +5609,11 @@ function startApp() {
         var muteIcon = document.createElement("img");
         muteIcon.setAttribute("src", "icons/mute_red.png");
         muteIcon.setAttribute("alt", "Toggle bgm");
-        muteIcon.style.width = '25px';
-        muteIcon.style.height = '25px';
+        muteIcon.style.width = '23px';
+        muteIcon.style.height = '23px';
         muteIcon.style.position = 'absolute';
         muteIcon.style.top = '2%';
-        muteIcon.style.left = '20px';
+        muteIcon.style.right = '230px';
         muteIcon.style.zIndex = '9999'; // place in front of scene
         muteIcon.style.cursor = 'pointer'; // Change cursor on hover
         
@@ -5516,13 +5689,13 @@ function startApp() {
 
             if (isMuted) {
 
-                bgm.play();
+                bgm.pause();
                 //muteButton.textContent = "Mute";
                 muteIcon.setAttribute("src", "icons/mute_red.png");
 
             } else {
 
-                bgm.pause();
+                bgm.play();
                 //muteButton.textContent = "Unmute";
                 muteIcon.setAttribute("src", "icons/unmute_green.png");
 
@@ -5557,11 +5730,11 @@ function startApp() {
         var typeIcon = document.createElement("img");
         typeIcon.setAttribute("src", "icons/sphere.png");
         typeIcon.setAttribute("alt", "Toggle toolhead Type");
-        typeIcon.style.width = '45px';
-        typeIcon.style.height = '45px';
+        typeIcon.style.width = '50px';
+        typeIcon.style.height = '50px';
         typeIcon.style.position = 'absolute';
         typeIcon.style.top = '2%';
-        typeIcon.style.left = '70px';
+        typeIcon.style.left = '30px';
         typeIcon.style.zIndex = '9999'; // place in front of scene
         typeIcon.style.cursor = 'pointer'; // Change cursor on hover
         

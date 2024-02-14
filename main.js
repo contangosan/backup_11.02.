@@ -765,8 +765,70 @@ function startApp() {
 
 
 
+    // ---------------------------------------------HEIGHT LINE ----------------------------------------------- 
 
 
+    
+    //var first_height_line = true;
+
+    var toolhead_center_xy = toolhead_center.clone();
+    toolhead_center_xy.z = 0;
+
+    // Erstellen Sie eine Geometry, die die Punkte enthält
+    var height_line_geometry = new THREE.BufferGeometry().setFromPoints([toolhead_center, toolhead_center_xy]);
+
+    // Erstellen Sie das Material für die Linie (z.B. rote Farbe)
+    var height_line_material = new THREE.LineBasicMaterial({ color: 0xff0000 });
+
+
+    // Erstellen Sie die Linie und fügen Sie sie der Szene hinzu
+    var height_line = new THREE.Line(height_line_geometry, height_line_material);
+    
+
+    var height_line_list = [];
+    height_line_list.push(height_line);
+    scene.add(height_line);
+
+
+
+    //create_height_line();
+
+
+    function create_height_line(){
+
+      
+                        
+        console.log("height_line_list.length = " + height_line_list.length);
+        removeObject(height_line_list[0]);
+        height_line_list = [];
+        console.log("height_line_list.length = " + height_line_list.length);
+
+        
+        var toolhead_center_xy = toolhead_center.clone();
+        toolhead_center_xy.z = 0;
+
+
+        var point1 = new THREE.Vector3(0, 0, 0);
+        var point2 = new THREE.Vector3(10, 10, 10);
+
+        // Erstellen Sie eine Geometry, die die Punkte enthält
+        height_line_geometry = new THREE.BufferGeometry().setFromPoints([toolhead_center, toolhead_center_xy]);
+
+
+
+        // Erstellen Sie die Linie und fügen Sie sie der Szene hinzu
+        var height_line = new THREE.Line(height_line_geometry, height_line_material);
+
+        scene.add(height_line);
+
+        height_line_list.push(height_line);
+
+
+        console.log("HEIGHTLINE");
+        
+
+
+    }
 
 
 
@@ -1295,6 +1357,7 @@ function startApp() {
 
 
             update_camera_position();
+            create_height_line();
 
         }
 

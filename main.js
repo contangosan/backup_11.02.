@@ -121,6 +121,10 @@ const clearSound = new Audio('sounds/clearButton.wav');
 // --- Toolhead Type Button ---
 const toolheadTypeSound = new Audio('sounds/plop_switch.mp3');
 
+// --- Toolhead Type Button ---
+const toolheadSizeSound = new Audio('sounds/size_switch.mp3');
+
+
 
 
 
@@ -327,7 +331,8 @@ function startApp() {
 
     // --------------------------------------------- GUI  -----------------------------------------------
     
-    var gui = new GUI();
+    
+    //var gui = new GUI();
 
     /*.lil-gui {
         --background-color: #ffffec;
@@ -341,13 +346,14 @@ function startApp() {
         --string-color: #587c51;
     }*/   
 
-    // Parameters
+    
+    /*// Parameters
     var parameters = {
         toolheadSize: 1,
         toolheadType: 2
     }
 
-
+    
     // Add sliders to GUI
     gui.add (parameters, 'toolheadSize', 1, 3 , 1);
     gui.add (parameters, 'toolheadType', 1, 2 , 1);
@@ -365,7 +371,8 @@ function startApp() {
     gui.domElement.style.position = 'fixed';
     gui.domElement.style.left = '20px'; // Adjust left position according to your preference
     gui.domElement.style.top = '10%'; // Adjust top position according to your preference
-        
+
+    */
 
 
 
@@ -793,10 +800,6 @@ function startApp() {
 
 
 
-
-
-    // ----------------------------------------- TOOLHEAD CONTROLS -----------------------------------------
-
     var key87 = false;
     var key83 = false;
     var key65 = false;
@@ -805,6 +808,9 @@ function startApp() {
     var key40 = false;
     var key32 = false;
     var key16 = false;
+    var key69 = false;
+    var key81 = false;
+
 
 
     // onKeyDown function
@@ -856,6 +862,17 @@ function startApp() {
         // SHIFT ERASE
         if (keyCode == 16) {
             key16 = true;
+        }
+
+
+        // E UP
+        if (keyCode == 69) {
+            key69 = true;
+        }
+
+        // Q DOWN
+        if (keyCode == 81) {
+            key81 = true;
         }
 
 
@@ -915,8 +932,18 @@ function startApp() {
             key16 = false;
         }
     
+        // E UP
+        if (keyCode == 69) {
+            key69 = false;
+        }
 
-        //renderer.render( scene, camera );
+        // Q DOWN
+        if (keyCode == 81) {
+            key81 = false;
+        }
+
+
+        
     };
 
 
@@ -930,7 +957,7 @@ function startApp() {
 
 
     // calculate the resulting movement from all buttons that are pressed and applying it on the toolhead
-    function update_toolhead() {
+    function move_toolhead_absolut() {
 
         //console.log("update_toolhead");
 
@@ -1035,7 +1062,245 @@ function startApp() {
 
     }
 
+
+    var w_move_vector = new THREE.Vector3(0,0,0);
+    var s_move_vector = new THREE.Vector3(0,0,0);
+    var a_move_vector = new THREE.Vector3(0,0,0);
+    var d_move_vector = new THREE.Vector3(0,0,0);
     
+    var up_move_vector = new THREE.Vector3(0,0,1);
+    var down_move_vector = new THREE.Vector3(0,0,-1);
+    up_move_vector.normalize();
+    down_move_vector.normalize();
+
+    up_move_vector.multiplyScalar(toolhead_speed);
+    down_move_vector.multiplyScalar(toolhead_speed);
+
+    var new_toolhead_vectors = [];
+
+
+    create_new_move_vectors();
+
+    function create_new_move_vectors(){
+
+
+        /*
+        //camera.position.set(toolhead_center.x - 20 , toolhead_center.y - 50, toolhead_center.z + 50);
+        
+        //camera_offset_vector = new THREE.Vector3(toolhead_center.x - 20 , toolhead_center.y - 50, toolhead_center.z + 50);
+        camera.position.set(toolhead_center.x  - camera_offset_vector.x , toolhead_center.y - camera_offset_vector.y, toolhead_center.z - camera_offset_vector.z);
+
+        // condition für die erste iteration die die kamera position auf die richtige stelle setzt
+        if(lock_camera == true){
+
+            lock_camera = false;
+
+            // abstand der kamera vom toolhead
+            camera.position.set(toolhead_center.x - 20 , toolhead_center.y - 50, toolhead_center.z + 50);
+            console.log("asdwasdwasdw");
+
+
+            camera_offset_vector = toolhead_center.clone().sub(camera.position);
+            //camera_offset_vector = new THREE.Vector3(toolhead_center.x - 20 , toolhead_center.y - 50, toolhead_center.z + 50);
+        }
+
+
+        // Setzen der Blickrichtung der Kamera auf toolhead_center
+        camera.lookAt(toolhead_center);
+        // Setzen der Up-Richtung der Kamera (optional)
+
+
+        //orbit_control.target.set(toolhead_center);
+        orbit_control.target.set(toolhead_center.x, toolhead_center.y, toolhead_center.z);
+        */
+
+        
+        new_toolhead_vectors = [];
+
+
+
+
+        w_move_vector = toolhead_center.clone().sub(camera.position);
+        //w_move_vector = camera.position.clone().sub(toolhead_center);
+        w_move_vector.z = 0;
+        w_move_vector.normalize()
+
+        s_move_vector = w_move_vector.clone().multiplyScalar(-1);
+
+
+        // Winkel im Bogenmaß für eine 90-Grad-Drehung
+        var angle = Math.PI / 2;
+
+        // Rotiere den Vektor um 90 Grad um die Z-Achse
+        a_move_vector = w_move_vector.clone().applyAxisAngle(new THREE.Vector3(0, 0, 1), angle);
+
+        d_move_vector = a_move_vector.clone().multiplyScalar(-1);
+
+
+
+
+        //w_move_vector.multiplyScalar(toolhead_speed);
+
+
+        new_toolhead_vectors.push(w_move_vector);
+        new_toolhead_vectors.push(s_move_vector);
+        new_toolhead_vectors.push(a_move_vector);
+        new_toolhead_vectors.push(d_move_vector);
+
+
+        //return new_toolhead_vectors
+
+    }
+
+
+
+    // calculate the resulting movement from all buttons that are pressed and applying it on the toolhead
+    function move_toolhead_relative() {
+
+        //console.log("update_toolhead");
+
+        movement_x = 0;
+        movement_y = 0;
+        movement_z = 0;
+
+
+        create_new_move_vectors();
+
+
+
+
+        var this_transform = new THREE.Vector3(0,0,0);
+
+    
+        //console.log(key32);
+
+        if (key87 == true) {
+            //movement_y += toolhead_speed;
+            //this_transform += new_toolhead_vectors[0] * toolhead_speed;
+            this_transform.add(new_toolhead_vectors[0].multiplyScalar(toolhead_speed));
+        }  
+        
+        if (key83 == true) {
+            //movement_y -= toolhead_speed;
+            //this_transform += new_toolhead_vectors[1] * toolhead_speed;
+            this_transform.add(new_toolhead_vectors[1].multiplyScalar(toolhead_speed));
+        }  
+
+        if (key65 == true) {
+            //movement_x -= toolhead_speed;
+            //this_transform += new_toolhead_vectors[2] * toolhead_speed;
+            this_transform.add(new_toolhead_vectors[2].multiplyScalar(toolhead_speed));
+        }  
+        
+        if (key68 == true) {
+            //movement_x += toolhead_speed;
+            //this_transform += new_toolhead_vectors[3] * toolhead_speed;
+            this_transform.add(new_toolhead_vectors[3].multiplyScalar(toolhead_speed));
+        }  
+
+        if (key38 == true) {
+            //movement_z += toolhead_speed;
+            //this_transform += up_move_vector * toolhead_speed;
+            this_transform.add(up_move_vector);
+        }      
+
+        if (key40 == true) {
+            //movement_z -= toolhead_speed;
+            //this_transform += down_move_vector * toolhead_speed;
+            this_transform.add(down_move_vector);
+        }  
+
+
+        if (key69 == true) {
+            //movement_z += toolhead_speed;
+            //this_transform += up_move_vector * toolhead_speed;
+            this_transform.add(up_move_vector);
+        }      
+
+        if (key81 == true) {
+            //movement_z -= toolhead_speed;
+            //this_transform += down_move_vector * toolhead_speed;
+            this_transform.add(down_move_vector);
+        }  
+
+
+
+        // create empty variables for adding up the sum of coordinates
+        var sum_of_points_x = 0;
+        var sum_of_points_y = 0;
+        var sum_of_points_z = 0;
+
+        //console.log(sum_of_points_x);
+        
+        if (this_transform.x != 0 || this_transform.y != 0 || this_transform.z != 0){
+
+
+
+            //update_camera_position();
+
+
+
+            for (let i = 0; i < toolhead_list.length; i++) {
+
+                // TOOLHEAD KOORDINATEN WERDEN GEÄNDERT
+
+                /*
+                toolhead_list[i].position.x += movement_x;
+                toolhead_list[i].position.y += movement_y;
+                toolhead_list[i].position.z += movement_z;
+                */
+                
+                toolhead_list[i].position.x += this_transform.x;
+                toolhead_list[i].position.y += this_transform.y;
+                toolhead_list[i].position.z += this_transform.z;
+
+
+
+    
+                // adding up the sum of coordinates
+                sum_of_points_x += toolhead_list[i].position.x;
+                sum_of_points_y += toolhead_list[i].position.y;
+                sum_of_points_z += toolhead_list[i].position.z;
+    
+            }
+    
+    
+    
+    
+            toolhead_display_geometry[0].position.x += this_transform.x;
+            toolhead_display_geometry[0].position.y += this_transform.y;
+            toolhead_display_geometry[0].position.z += this_transform.z;
+
+
+
+
+            
+    
+
+    
+
+        
+
+
+            // calculating the average coordinates
+            var average_of_points_x = sum_of_points_x / (toolhead_list.length );
+            var average_of_points_y = sum_of_points_y / (toolhead_list.length );
+            var average_of_points_z = sum_of_points_z / (toolhead_list.length );
+
+            // refreshing the toolhead center
+            toolhead_center.x = average_of_points_x
+            toolhead_center.y = average_of_points_y
+            toolhead_center.z = average_of_points_z
+
+
+
+            update_camera_position();
+
+        }
+
+
+
+    }
 
     
 
@@ -4702,6 +4967,7 @@ function startApp() {
     clearFunction();
     muteFunction();
     toolheadTypeFunction();
+    toolheadSizeFunction();
 
 
 
@@ -5227,9 +5493,9 @@ function startApp() {
         // Create an image element for the icon
         var typeIcon = document.createElement("img");
         typeIcon.setAttribute("src", "icons/sphere.png");
-        typeIcon.setAttribute("alt", "Toggle bgm");
-        typeIcon.style.width = '35px';
-        typeIcon.style.height = '35px';
+        typeIcon.setAttribute("alt", "Toggle toolhead Type");
+        typeIcon.style.width = '45px';
+        typeIcon.style.height = '45px';
         typeIcon.style.position = 'absolute';
         typeIcon.style.top = '2%';
         typeIcon.style.left = '70px';
@@ -5343,8 +5609,364 @@ function startApp() {
 
 
 
+    // -------------------------------------------------- Toolhead SIZE Selection ---------------------------------------------------
+
+    function toolheadSizeFunction() {
+
+        // ----- Toolhead SIZE "sphere" -----
+
+        // --- 1 BUTTON ---
+        var sizeButton1 = document.createElement("button");
+        sizeButton1.setAttribute("id", "sizeButton1");
+        
+        // Create an image element for the icon
+        var sizeIcon1 = document.createElement("img");
+        sizeIcon1.setAttribute("src", "icons/1s_f.png");
+        sizeIcon1.setAttribute("alt", "Toggle toolhead Size");
+        sizeIcon1.style.width = '30px';
+        sizeIcon1.style.height = '30px';
+        sizeIcon1.style.position = 'absolute';
+        sizeIcon1.style.top = '2%';
+        sizeIcon1.style.left = '120px';
+        sizeIcon1.style.zIndex = '9999'; // place in front of scene
+        sizeIcon1.style.cursor = 'pointer'; // Change cursor on hover
+        
+        
+        // Append the icon image to the button
+        sizeButton1.appendChild(sizeIcon1);
+
+        // Append the button element to the body
+        document.body.appendChild(sizeButton1);
 
 
+
+        // Visual feedback on hover
+        sizeButton1.addEventListener ('mouseenter', function() {
+            //muteButton.style.backgroundColor = 'rgb(180, 230, 180)'; // background color on hover
+            // exportButton.style.border = 'true';
+            sizeIcon1.style.filter = "brightness(120%)"; // Adjust brightness level as needed
+            sizeIcon1.style.opacity = "0.7"; // Adjust opacity level as needed
+        });
+
+        sizeButton1.addEventListener ('mouseleave', function() {
+            //muteButton.style.backgroundColor = 'rgb(69, 150, 69)'; // original background color
+            sizeIcon1.style.filter = "brightness(100%)"; // Adjust brightness level as needed
+            sizeIcon1.style.opacity = "1"; // Adjust opacity level as needed
+        });
+
+
+        // Visual feedback on click
+        sizeButton1.addEventListener ('mousedown', function() {
+            //muteButton.style.backgroundColor = 'rgb(180, 230, 180)'; // background color on click
+            sizeIcon1.style.filter = "brightness(120%)"; // Adjust brightness level as needed
+            sizeIcon1.style.opacity = "0.7"; // Adjust opacity level as needed
+        });
+
+        sizeButton1.addEventListener ('mouseup', function() {
+            //muteButton.style.backgroundColor = 'rgb(69, 150, 69)'; // Restore original background color after click
+            sizeIcon1.style.filter = "brightness(100%)"; // Adjust brightness level as needed
+            sizeIcon1.style.opacity = "1"; // Adjust opacity level as needed
+        });
+        
+
+
+
+
+
+        // --- 2 BUTTON ---
+        var sizeButton2 = document.createElement("button");
+        sizeButton2.setAttribute("id", "sizeButton2");
+        
+        // Create an image element for the icon
+        var sizeIcon2 = document.createElement("img");
+        sizeIcon2.setAttribute("src", "icons/2s_h.png");
+        sizeIcon2.setAttribute("alt", "Toggle toolhead Size");
+        sizeIcon2.style.width = '30px';
+        sizeIcon2.style.height = '30px';
+        sizeIcon2.style.position = 'absolute';
+        sizeIcon2.style.top = '2%';
+        sizeIcon2.style.left = '160px';
+        sizeIcon2.style.zIndex = '9999'; // place in front of scene
+        sizeIcon2.style.cursor = 'pointer'; // Change cursor on hover
+        
+        
+        // Append the icon image to the button
+        sizeButton2.appendChild(sizeIcon2);
+
+        // Append the button element to the body
+        document.body.appendChild(sizeButton2);
+
+
+
+        // Visual feedback on hover
+        sizeButton2.addEventListener ('mouseenter', function() {
+            //muteButton.style.backgroundColor = 'rgb(180, 230, 180)'; // background color on hover
+            // exportButton.style.border = 'true';
+            sizeIcon2.style.filter = "brightness(120%)"; // Adjust brightness level as needed
+            sizeIcon2.style.opacity = "0.7"; // Adjust opacity level as needed
+        });
+
+        sizeButton2.addEventListener ('mouseleave', function() {
+            //muteButton.style.backgroundColor = 'rgb(69, 150, 69)'; // original background color
+            sizeIcon2.style.filter = "brightness(100%)"; // Adjust brightness level as needed
+            sizeIcon2.style.opacity = "1"; // Adjust opacity level as needed
+        });
+
+
+        // Visual feedback on click
+        sizeButton2.addEventListener ('mousedown', function() {
+            //muteButton.style.backgroundColor = 'rgb(180, 230, 180)'; // background color on click
+            sizeIcon2.style.filter = "brightness(120%)"; // Adjust brightness level as needed
+            sizeIcon2.style.opacity = "0.7"; // Adjust opacity level as needed
+        });
+
+        sizeButton2.addEventListener ('mouseup', function() {
+            //muteButton.style.backgroundColor = 'rgb(69, 150, 69)'; // Restore original background color after click
+            sizeIcon2.style.filter = "brightness(100%)"; // Adjust brightness level as needed
+            sizeIcon2.style.opacity = "1"; // Adjust opacity level as needed
+        });
+
+
+
+
+
+
+        // --- 3 BUTTON ---
+        var sizeButton3 = document.createElement("button");
+        sizeButton3.setAttribute("id", "sizeButton3");
+        
+        // Create an image element for the icon
+        var sizeIcon3 = document.createElement("img");
+        sizeIcon3.setAttribute("src", "icons/3s_h.png");
+        sizeIcon3.setAttribute("alt", "Toggle toolhead Size");
+        sizeIcon3.style.width = '30px';
+        sizeIcon3.style.height = '30px';
+        sizeIcon3.style.position = 'absolute';
+        sizeIcon3.style.top = '2%';
+        sizeIcon3.style.left = '200px';
+        sizeIcon3.style.zIndex = '9999'; // place in front of scene
+        sizeIcon3.style.cursor = 'pointer'; // Change cursor on hover
+        
+        
+        // Append the icon image to the button
+        sizeButton3.appendChild(sizeIcon3);
+
+        // Append the button element to the body
+        document.body.appendChild(sizeButton3);
+
+
+
+        // Visual feedback on hover
+        sizeButton3.addEventListener ('mouseenter', function() {
+            //muteButton.style.backgroundColor = 'rgb(180, 230, 180)'; // background color on hover
+            // exportButton.style.border = 'true';
+            sizeIcon3.style.filter = "brightness(120%)"; // Adjust brightness level as needed
+            sizeIcon3.style.opacity = "0.7"; // Adjust opacity level as needed
+        });
+
+        sizeButton3.addEventListener ('mouseleave', function() {
+            //muteButton.style.backgroundColor = 'rgb(69, 150, 69)'; // original background color
+            sizeIcon3.style.filter = "brightness(100%)"; // Adjust brightness level as needed
+            sizeIcon3.style.opacity = "1"; // Adjust opacity level as needed
+        });
+
+
+        // Visual feedback on click
+        sizeButton3.addEventListener ('mousedown', function() {
+            //muteButton.style.backgroundColor = 'rgb(180, 230, 180)'; // background color on click
+            sizeIcon3.style.filter = "brightness(120%)"; // Adjust brightness level as needed
+            sizeIcon3.style.opacity = "0.7"; // Adjust opacity level as needed
+        });
+
+        sizeButton3.addEventListener ('mouseup', function() {
+            //muteButton.style.backgroundColor = 'rgb(69, 150, 69)'; // Restore original background color after click
+            sizeIcon3.style.filter = "brightness(100%)"; // Adjust brightness level as needed
+            sizeIcon3.style.opacity = "1"; // Adjust opacity level as needed
+        });
+
+
+
+        
+
+
+
+        // Event Listeners to toggle between sizes:
+
+        // --- 1 BUTTON ---
+        sizeButton1.addEventListener("click", function() {
+
+            button_toolhead_size = 1;
+
+            sizeIcon1.setAttribute("src", "icons/1s_f.png");
+            sizeIcon2.setAttribute("src", "icons/2s_h.png");
+            sizeIcon3.setAttribute("src", "icons/3s_h.png");
+
+            toolheadSizeSound.play();
+
+            console.log('toolhead Size: 1');
+
+
+            // Remove focus from the buttons
+            sizeButton1.blur();
+            
+        });
+
+
+
+        // --- 2 BUTTON ---
+        sizeButton2.addEventListener("click", function() {
+
+            button_toolhead_size = 2;
+
+            sizeIcon1.setAttribute("src", "icons/1s_h.png");
+            sizeIcon2.setAttribute("src", "icons/2s_f.png");
+            sizeIcon3.setAttribute("src", "icons/3s_h.png");
+
+            toolheadSizeSound.play();
+
+            console.log('toolhead Size: 2');
+
+
+            // Remove focus from the buttons
+            sizeButton2.blur();
+            
+        });
+
+
+
+        // --- 3 BUTTON ---
+        sizeButton3.addEventListener("click", function() {
+
+            button_toolhead_size = 3;
+
+            sizeIcon1.setAttribute("src", "icons/1s_h.png");
+            sizeIcon2.setAttribute("src", "icons/2s_h.png");
+            sizeIcon3.setAttribute("src", "icons/3s_f.png");
+
+            toolheadSizeSound.play();
+
+            console.log('toolhead Size: 3');
+
+
+            // Remove focus from the buttons
+            sizeButton3.blur();
+            
+        });
+
+
+
+        
+
+
+    }
+        
+    
+
+
+
+
+
+    /*function toolheadSizeFunction() {         // wanted to make the code more dynamic and elegant
+
+        // initial left position
+        var leftPosition1 = 120; // ...for 1 button
+        var leftPosition2 = 160; // ...for 2 button
+        var leftPosition3 = 200; // ...for 3 button
+
+        // initial icon source
+        var sizeIcon_1s_f = "icons/1s_f.png"
+        var sizeIcon_2s_f = "icons/2s_f.png"
+        var sizeIcon_3s_f = "icons/3s_f.png"
+
+
+        // Create the button elements
+        var sizeButton1 = createButton(sizeIcon_1s_f, button_toolhead_size, leftPosition1);
+        var sizeButton2 = createButton(sizeIcon_2s_f, button_toolhead_size, leftPosition2);
+        var sizeButton3 = createButton(sizeIcon_3s_f, button_toolhead_size, leftPosition3);
+
+        
+
+        // Append the button elements to the body
+        document.body.appendChild(sizeButton1);
+        document.body.appendChild(sizeButton2);
+        document.body.appendChild(sizeButton3);
+
+
+        function createButton(i_sizeIcon, i_button_toolhead_size, i_leftPosition) {
+
+            // Create the button element
+            var sizeButton = document.createElement("button");
+            sizeButton.setAttribute("class", "size-button");
+            
+            // Create an image element for the icon
+            var sizeIcon = document.createElement("img");
+            sizeIcon.setAttribute("src", i_sizeIcon);
+            sizeIcon.setAttribute("alt", "Toggle toolhead Size");
+            sizeIcon.style.width = '30px';
+            sizeIcon.style.height = '30px';
+            sizeIcon.style.cursor = 'pointer'; // Change cursor on hover
+            
+            // Append the icon image to the button
+            sizeButton.appendChild(sizeIcon);
+
+
+
+            // Set position for the button
+            sizeButton.style.position = 'absolute';
+            sizeButton.style.top = '2%';
+            sizeButton.style.left = "'" + i_leftPosition + "px'";
+            
+
+            console.log("button created")
+
+            
+            // Visual feedback on hover
+            sizeButton.addEventListener('mouseenter', function() {
+                sizeIcon.style.filter = "brightness(120%)"; // brightness level
+                sizeIcon.style.opacity = "0.7"; // opacity level
+            });
+
+            sizeButton.addEventListener('mouseleave', function() {
+                sizeIcon.style.filter = "brightness(100%)"; // brightness level
+                sizeIcon.style.opacity = "1"; // opacity level
+            });
+
+
+
+            // Function to toggle toolhead size
+            sizeButton.addEventListener("click", function() {
+
+                // Reset all buttons
+                document.querySelectorAll('.size-button').forEach(function(button) {
+                    button.classList.remove('active');
+                });
+
+                // Set current button as active
+                sizeButton.classList.add('active');
+
+                // Apply toolhead size change
+                changeToolheadSize(i_button_toolhead_size);
+
+            });
+
+
+            return sizeButton;
+
+        }
+
+
+
+        // Function to change toolhead size
+        function changeToolheadSize(i_button_toolhead_size) {
+            // Your logic for changing toolhead size based on the 'size' parameter
+            console.log('Toolhead Size:', i_button_toolhead_size);
+        }
+
+
+    }
+    */
+
+    
 
 
     
@@ -5379,9 +6001,9 @@ function startApp() {
         
     
         // condition for recreating toolhead if parameters change
-        if (toolhead_size != parameters.toolheadSize || toolhead_type != button_toohead_type){
+        if (toolhead_size != button_toolhead_size || toolhead_type != button_toohead_type){
 
-            toolhead_size = parameters.toolheadSize;
+            toolhead_size = button_toolhead_size;
             toolhead_type = button_toohead_type;
 
             remove_toolhead();
@@ -5394,14 +6016,14 @@ function startApp() {
     
         //orbit_control.update(w);
         
-        update_toolhead();
         //update_camera_position();
 
         // enable orbit control update after update camera position for trippy effect!
         //orbit_control.update();
         
         
-
+        //move_toolhead_absolut();
+        move_toolhead_relative();
         
 
 

@@ -385,7 +385,7 @@ function startApp() {
     var y_size = 100;
     var z_size = 100;
 
-    var toolhead_speed = 0.5;
+    var toolhead_speed = 0.1;
     //var toolhead_size = parameters.toolheadSize;
     //var toolhead_type = parameters.toolheadType;
 
